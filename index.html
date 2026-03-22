@@ -173,7 +173,82 @@ body{display:flex;flex-direction:column;}
 .spin{width:34px;height:34px;border:3px solid rgba(124,106,255,.3);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
 
-/* ── MOBILE BOTTOM TOOLBAR ── */
+/* ── ACTIVITY LOG PANEL ── */
+#logPanel{
+  position:fixed;top:0;right:0;bottom:0;z-index:500;
+  width:340px;max-width:90vw;
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:-12px 0 48px rgba(0,0,0,.5);
+}
+#logPanel.open{transform:translateX(0);}
+.log-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.log-title{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.log-title-dot{width:7px;height:7px;border-radius:50%;background:var(--accent3);flex-shrink:0;}
+.log-close{
+  width:28px;height:28px;border-radius:7px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.log-close:hover{border-color:var(--accent2);color:var(--accent2);}
+.log-stats{
+  display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.log-stat{
+  flex:1;padding:10px 14px;text-align:center;border-right:1px solid var(--border);
+}
+.log-stat:last-child{border-right:none;}
+.log-stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--accent);}
+.log-stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.log-filter{
+  display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;
+}
+.log-chip{
+  padding:3px 9px;border-radius:20px;font-size:10.5px;cursor:pointer;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  transition:all .15s;
+}
+.log-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.log-list{flex:1;overflow-y:auto;padding:8px;}
+.log-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:10px;color:var(--muted);font-size:13px;
+}
+.log-empty-icon{font-size:36px;opacity:.4;}
+.log-item{
+  display:flex;gap:10px;padding:10px 8px;border-radius:10px;
+  transition:background .15s;margin-bottom:2px;
+}
+.log-item:hover{background:var(--surface2);}
+.log-icon{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.log-content{flex:1;min-width:0;}
+.log-action{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.3;}
+.log-detail{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.log-time{font-size:10px;color:var(--text3,#555);margin-top:3px;font-family:'DM Sans',monospace;}
+.log-clear{
+  padding:12px;border-top:1px solid var(--border);flex-shrink:0;
+}
+.log-clear button{
+  width:100%;padding:9px;border-radius:9px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12.5px;cursor:pointer;
+  transition:all .15s;
+}
+.log-clear button:hover{border-color:var(--accent2);color:var(--accent2);}
+
+.logo{cursor:pointer;user-select:none;}
 .mob-bar{
   display:none;
   position:fixed;bottom:0;left:0;right:0;z-index:300;
@@ -334,7 +409,7 @@ body{display:flex;flex-direction:column;}
 
 <!-- ── TOPBAR ── -->
 <div class="topbar">
-  <span class="logo">Logary</span>
+  <span class="logo" id="logoBtn">Logary</span>
   <div class="sep"></div>
   <button class="tbtn active" id="tSel" onclick="setTool('select')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 7z"/></svg>Seç
@@ -402,6 +477,28 @@ body{display:flex;flex-direction:column;}
     </button>
   </div>
   <div class="hint" id="hint"><b>V</b> Seç · <b>P</b> Kalem · <b>E</b> Silgi · <b>C</b> Bağla · <b>T</b> Metin · <b>Space+sürükle</b> kaydır · <b>Scroll</b> zoom</div>
+</div>
+
+<!-- ── ACTIVITY LOG PANEL ── -->
+<div id="logPanel">
+  <div class="log-header">
+    <div class="log-title"><div class="log-title-dot"></div>Aktivite Logu</div>
+    <button class="log-close" onclick="closeLog()">×</button>
+  </div>
+  <div class="log-stats">
+    <div class="log-stat"><div class="log-stat-val" id="ls-total">0</div><div class="log-stat-lbl">İşlem</div></div>
+    <div class="log-stat"><div class="log-stat-val" id="ls-today">0</div><div class="log-stat-lbl">Bugün</div></div>
+    <div class="log-stat"><div class="log-stat-val" id="ls-nodes">0</div><div class="log-stat-lbl">Node</div></div>
+  </div>
+  <div class="log-filter">
+    <button class="log-chip on" data-f="all" onclick="setLogFilter(this)">Tümü</button>
+    <button class="log-chip" data-f="node" onclick="setLogFilter(this)">Node</button>
+    <button class="log-chip" data-f="edit" onclick="setLogFilter(this)">Düzenleme</button>
+    <button class="log-chip" data-f="progress" onclick="setLogFilter(this)">İlerleme</button>
+    <button class="log-chip" data-f="conn" onclick="setLogFilter(this)">Bağlantı</button>
+  </div>
+  <div class="log-list" id="logList"></div>
+  <div class="log-clear"><button onclick="clearLog()">Logu Temizle</button></div>
 </div>
 
 <div id="expOverlay"><div class="spin"></div><p>Görsel hazırlanıyor…</p></div>
@@ -472,14 +569,98 @@ body{display:flex;flex-direction:column;}
 </div>
 
 <script>
+const LOG_KEY='logary_activity_v1';
+let logFilter='all';
+let logClickCount=0, logClickTimer=null;
+
+function logAdd(type, action, detail=''){
+  const logs=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');
+  logs.unshift({type, action, detail, ts: Date.now()});
+  if(logs.length>200) logs.length=200;
+  localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+}
+
+function openLog(){
+  document.getElementById('logPanel').classList.add('open');
+  renderLog();
+}
+function closeLog(){document.getElementById('logPanel').classList.remove('open');}
+
+function setLogFilter(el){
+  document.querySelectorAll('.log-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  logFilter=el.dataset.f;
+  renderLog();
+}
+
+function clearLog(){
+  if(!confirm('Log temizlenecek. Emin misin?'))return;
+  localStorage.removeItem(LOG_KEY);
+  renderLog();
+}
+
+const LOG_ICONS={node:'📋',edit:'✏️',progress:'📊',conn:'🔗',delete:'🗑️'};
+const LOG_COLORS={node:'rgba(124,106,255,.15)',edit:'rgba(106,255,204,.12)',progress:'rgba(255,184,106,.12)',conn:'rgba(122,180,232,.12)',delete:'rgba(255,106,138,.12)'};
+
+function renderLog(){
+  const logs=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');
+  const list=document.getElementById('logList');
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  const filtered=logFilter==='all'?logs:logs.filter(l=>l.type===logFilter);
+
+  document.getElementById('ls-total').textContent=logs.length;
+  document.getElementById('ls-today').textContent=logs.filter(l=>l.ts>=today.getTime()).length;
+  document.getElementById('ls-nodes').textContent=logs.filter(l=>l.type==='node'||l.type==='delete').length;
+
+  if(filtered.length===0){
+    list.innerHTML=`<div class="log-empty"><div class="log-empty-icon">📭</div><span>Henüz aktivite yok</span></div>`;
+    return;
+  }
+
+  list.innerHTML=filtered.map(l=>{
+    const d=new Date(l.ts);
+    const dateStr=d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'});
+    const timeStr=d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    const icon=LOG_ICONS[l.type]||'📌';
+    const bg=LOG_COLORS[l.type]||'rgba(124,106,255,.1)';
+    return `<div class="log-item">
+      <div class="log-icon" style="background:${bg}">${icon}</div>
+      <div class="log-content">
+        <div class="log-action">${l.action}</div>
+        ${l.detail?`<div class="log-detail">${l.detail}</div>`:''}
+        <div class="log-time">${dateStr} ${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setupLogoClick(){
+  const logo=document.getElementById('logoBtn');
+  if(!logo)return;
+  logo.addEventListener('click',()=>{
+    if(!isOwner())return;
+    logClickCount++;
+    clearTimeout(logClickTimer);
+    if(logClickCount>=3){
+      logClickCount=0;
+      openLog();
+    } else {
+      logClickTimer=setTimeout(()=>{logClickCount=0;},600);
+    }
+  });
+}
+
 async function sha256(msg){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-const CORRECT_HASH=(async()=>await sha256('logarymjademadmin'))();
+const HASH_OWNER=(async()=>await sha256('ademcanadmin6060'))();
+const HASH_PARTNER=(async()=>await sha256('logarymjademadmin'))();
 
 function isLoggedIn(){return sessionStorage.getItem('logary_auth')==='1';}
+function isOwner(){return sessionStorage.getItem('logary_owner')==='1';}
 
 async function doLogin(){
   const pw=document.getElementById('pwInput').value;
@@ -487,14 +668,18 @@ async function doLogin(){
   const err=document.getElementById('loginErr');
   if(!pw){inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);return;}
   const hash=await sha256(pw);
-  const correct=await CORRECT_HASH;
-  if(hash===correct){
+  const ho=await HASH_OWNER;
+  const hp=await HASH_PARTNER;
+  if(hash===ho||hash===hp){
     sessionStorage.setItem('logary_auth','1');
+    if(hash===ho) sessionStorage.setItem('logary_owner','1');
+    else sessionStorage.removeItem('logary_owner');
     const ls=document.getElementById('loginScreen');
     ls.style.opacity='0';ls.style.transition='opacity .4s';
     setTimeout(()=>{ls.style.display='none';},400);
     err.classList.remove('show');
     initApp();
+    if(hash===ho) setTimeout(openLog,600);
   } else {
     inp.classList.add('err');err.classList.add('show');inp.value='';
     setTimeout(()=>inp.classList.remove('err'),400);
@@ -855,7 +1040,9 @@ function addNode(type,x,y){
   const id=++nid;
   const r=wrap.getBoundingClientRect();
   const node={id,type,x:x??(-panX/scale+50+Math.random()*(r.width/scale-300)),y:y??(-panY/scale+50+Math.random()*(r.height/scale-220)),title:'',desc:'',progress:type==='start'?100:type==='end'?0:35};
-  nodes.push(node);buildNode(node);scheduleSave();return node;
+  nodes.push(node);buildNode(node);scheduleSave();
+  logAdd('node',`Node eklendi: ${TLABEL[type]||type}`,`Pozisyon: ${Math.round(node.x)}, ${Math.round(node.y)}`);
+  return node;
 }
 function buildNode(node){
   const el=document.createElement('div');
@@ -877,7 +1064,16 @@ function buildNode(node){
     </div>`;
   el.querySelectorAll('textarea').forEach(ta=>{
     const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';};
-    ta.addEventListener('input',grow);setTimeout(grow,0);
+    let editTimer=null;
+    ta.addEventListener('input',()=>{
+      grow();
+      clearTimeout(editTimer);
+      editTimer=setTimeout(()=>{
+        const field=ta.classList.contains('ntitle')?'Başlık':'Açıklama';
+        logAdd('edit',`${field} düzenlendi`,ta.value.slice(0,60)+(ta.value.length>60?'…':''));
+      },1500);
+    });
+    setTimeout(grow,0);
   });
   const handle=el.querySelector('#drag'+node.id);
   handle.addEventListener('pointerdown',e=>{
@@ -898,10 +1094,15 @@ function buildNode(node){
 }
 function selectNode(id){document.querySelectorAll('.rnode').forEach(n=>n.classList.remove('sel'));selId=id;if(id)document.getElementById('n'+id)?.classList.add('sel');}
 function setProgress(id,v){
-  const n=nodes.find(x=>x.id===id);if(!n)return;n.progress=v;
-  document.getElementById('pf'+id).style.width=v+'%';document.getElementById('pp'+id).textContent=v+'%';scheduleSave();
+  const n=nodes.find(x=>x.id===id);if(!n)return;
+  const old=n.progress; n.progress=v;
+  document.getElementById('pf'+id).style.width=v+'%';document.getElementById('pp'+id).textContent=v+'%';
+  logAdd('progress',`İlerleme güncellendi: ${n.title||'(başlıksız)'}`,`%${old} → %${v}`);
+  scheduleSave();
 }
 function delNode(id){
+  const n=nodes.find(x=>x.id===id);
+  logAdd('delete',`Node silindi: ${n?.title||'(başlıksız)'}`,TLABEL[n?.type]||'');
   nodes=nodes.filter(n=>n.id!==id);conns=conns.filter(c=>c.a!==id&&c.b!==id);
   document.getElementById('n'+id)?.remove();redrawConns();scheduleSave();
 }
@@ -909,7 +1110,11 @@ function delNode(id){
 function handleConn(id,el){
   if(connFrom===null){connFrom=id;el.classList.add('sel');el.style.borderColor='#ffb86a';}
   else if(connFrom!==id){
-    if(!conns.find(c=>(c.a===connFrom&&c.b===id)||(c.a===id&&c.b===connFrom)))conns.push({a:connFrom,b:id});
+    if(!conns.find(c=>(c.a===connFrom&&c.b===id)||(c.a===id&&c.b===connFrom))){
+      conns.push({a:connFrom,b:id});
+      const a=nodes.find(x=>x.id===connFrom), b=nodes.find(x=>x.id===id);
+      logAdd('conn','Bağlantı eklendi',`${a?.title||'Node'} → ${b?.title||'Node'}`);
+    }
     clearHL();connFrom=null;redrawConns();scheduleSave();
   }
 }
@@ -996,9 +1201,11 @@ function loadPreset(){
 
 window.addEventListener('load',()=>{
   document.getElementById('pwInput').focus();
+  setupLogoClick();
   if(isLoggedIn()){
     document.getElementById('loginScreen').style.display='none';
     initApp();
+    if(isOwner()) setTimeout(openLog,600);
   }
 });
 </script>
