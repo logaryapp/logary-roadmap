@@ -586,7 +586,7 @@ const LOG_KEY='logary_activity_v1';
 let logFilter='all';
 let logClickCount=0, logClickTimer=null;
 
-const DISCORD_WEBHOOK='https://discord.com/api/webhooks/1485407990080082115/C-I_U4t3VdyLc2p_j6UN6G178kKwVjuUXZJeJgS_VxFBATdRZWQvwdO_MuhiKdnJqess';
+const DISCORD_WEBHOOK='https://discord.com/api/webhooks/1485406917923836046/uGAhUKuy4K3Vkg92AcYJIDSUVGIPr_n-Pl4dOrl8TjgSh0wxgejzVs16NvK14mj68LEW';
 
 const DC_COLORS={
   node:0x7c6aff,
@@ -657,14 +657,47 @@ async function sendDiscord(type, nodeType, title, desc='', progress=null, extra=
 }
 
 function logAdd(type, action, detail=''){
+  const entry={type,action,detail,ts:Date.now()};
   const logs=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');
-  logs.unshift({type, action, detail, ts: Date.now()});
-  if(logs.length>200) logs.length=200;
-  localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+  logs.unshift(entry);
+  if(logs.length>200)logs.length=200;
+  localStorage.setItem(LOG_KEY,JSON.stringify(logs));
+  syncLogToSupabase(logs);
 }
 
-function openLog(){
+async function syncLogToSupabase(logs){
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/roadmap?id=eq.2&select=id`,{headers:SUPA_HEADERS});
+    const rows=await res.json();
+    const payload=JSON.stringify(logs);
+    if(rows&&rows.length>0){
+      await fetch(`${SUPA_URL}/rest/v1/roadmap?id=eq.2`,{
+        method:'PATCH',headers:SUPA_HEADERS,
+        body:JSON.stringify({data:payload,updated_at:new Date().toISOString()})
+      });
+    } else {
+      await fetch(`${SUPA_URL}/rest/v1/roadmap`,{
+        method:'POST',headers:{...SUPA_HEADERS,'Prefer':'return=minimal'},
+        body:JSON.stringify({id:2,data:payload,updated_at:new Date().toISOString()})
+      });
+    }
+  }catch(e){}
+}
+
+async function loadLogsFromSupabase(){
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/roadmap?id=eq.2&select=data`,{headers:SUPA_HEADERS});
+    const rows=await res.json();
+    if(rows&&rows.length>0&&rows[0].data){
+      const logs=JSON.parse(rows[0].data);
+      localStorage.setItem(LOG_KEY,JSON.stringify(logs));
+    }
+  }catch(e){}
+}
+
+async function openLog(){
   document.getElementById('logPanel').classList.add('open');
+  await loadLogsFromSupabase();
   renderLog();
 }
 function closeLog(){document.getElementById('logPanel').classList.remove('open');}
@@ -812,7 +845,7 @@ let appReady=false;
 const SKEY='logary_v3';
 let canvas,ctx,NL,SVG,wrap,VP;
 
-function initApp(){
+async function initApp(){
   if(appReady)return;
   appReady=true;
   canvas=document.getElementById('drawCanvas');
@@ -987,9 +1020,10 @@ function initApp(){
 
   window.addEventListener('resize',resize);
   resize();
-  const ok=doLoad();
+  const ok=await doLoad();
   if(!ok)loadPreset();
   setTool('select');
+  startRealtimeSync();
 }
 
 function applyVP(){
@@ -1021,15 +1055,21 @@ function resizeCanvas(){
 }
 function resize(){resizeCanvas();applyVP();}
 
+const SUPA_URL='https://zbphnjrtmmnjoaotrsju.supabase.co';
+const SUPA_KEY='sb_publishable_gp-eupG38TKtE5XsHcSjVg_NzZL9EEG';
+const SUPA_HEADERS={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
+const ROW_ID=1;
+
 function setSB(state,txt){
   const b=document.getElementById('sbadge');b.className='sbadge '+state;
   document.getElementById('stxt').textContent=txt;
 }
 function scheduleSave(){
   setSB('saving','Kaydediliyor…');
-  clearTimeout(saveTimer);saveTimer=setTimeout(doSave,900);
+  clearTimeout(saveTimer);saveTimer=setTimeout(doSave,1200);
 }
-function doSave(){
+
+async function doSave(){
   try{
     nodes.forEach(n=>{
       const el=document.getElementById('n'+n.id);if(!el)return;
@@ -1040,25 +1080,91 @@ function doSave(){
       const el=document.getElementById('l'+l.id);if(!el)return;
       l.text=el.querySelector('textarea').value;
     });
-    localStorage.setItem(SKEY,JSON.stringify({nodes,conns,nid,labels,lid,draw:canvas.toDataURL()}));
+
+    const payload={nodes,conns,nid,labels,lid};
+
+    const res=await fetch(`${SUPA_URL}/rest/v1/roadmap?id=eq.${ROW_ID}`,{
+      method:'PATCH',
+      headers:SUPA_HEADERS,
+      body:JSON.stringify({data:JSON.stringify(payload),updated_at:new Date().toISOString()})
+    });
+
+    if(res.status===404||res.status===406){
+      await fetch(`${SUPA_URL}/rest/v1/roadmap`,{
+        method:'POST',
+        headers:{...SUPA_HEADERS,'Prefer':'return=minimal'},
+        body:JSON.stringify({id:ROW_ID,data:JSON.stringify(payload),updated_at:new Date().toISOString()})
+      });
+    }
+
+    localStorage.setItem(SKEY,JSON.stringify(payload));
     setSB('saved','Kaydedildi ✓');setTimeout(()=>setSB('','Kaydedildi'),2000);
-  }catch(e){setSB('','⚠ Hata');}
+  }catch(e){
+    setSB('','⚠ Hata');
+    console.warn('Save hatası:',e);
+  }
 }
-function doLoad(){
+
+async function doLoad(){
   if(FORCE_PRESET)return false;
   try{
-    const raw=localStorage.getItem(SKEY);if(!raw)return false;
-    const d=JSON.parse(raw);
-    if(!d.nodes||d.nodes.length===0)return false;
+    const res=await fetch(`${SUPA_URL}/rest/v1/roadmap?id=eq.${ROW_ID}&select=data`,{
+      headers:SUPA_HEADERS
+    });
+    const rows=await res.json();
+    if(!rows||rows.length===0||!rows[0].data){
+      const local=localStorage.getItem(SKEY);
+      if(local) return loadFromJSON(JSON.parse(local));
+      return false;
+    }
+    const d=JSON.parse(rows[0].data);
+    return loadFromJSON(d);
+  }catch(e){
+    const local=localStorage.getItem(SKEY);
+    if(local) return loadFromJSON(JSON.parse(local));
+    return false;
+  }
+}
+
+function loadFromJSON(d){
+  try{
+    if(!d||!d.nodes||d.nodes.length===0)return false;
     nodes=d.nodes;conns=d.conns||[];nid=d.nid||0;
     labels=d.labels||[];lid=d.lid||0;
     nodes.forEach(n=>buildNode(n));
     labels.forEach(l=>buildLabel(l));
-    if(d.draw){const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);};img.src=d.draw;}
     setTimeout(redrawConns,80);
     setSB('saved','Yüklendi ✓');setTimeout(()=>setSB('','Kaydedildi'),2000);
     return true;
   }catch(e){return false;}
+}
+
+function startRealtimeSync(){
+  setInterval(async()=>{
+    try{
+      const res=await fetch(`${SUPA_URL}/rest/v1/roadmap?id=eq.${ROW_ID}&select=data,updated_at`,{
+        headers:SUPA_HEADERS
+      });
+      const rows=await res.json();
+      if(!rows||rows.length===0)return;
+      const remote=JSON.parse(rows[0].data);
+      const local=JSON.stringify({nodes,conns,nid,labels,lid});
+      const remoteStr=JSON.stringify({nodes:remote.nodes,conns:remote.conns,nid:remote.nid,labels:remote.labels,lid:remote.lid});
+      if(local!==remoteStr){
+        nodes=remote.nodes||[];conns=remote.conns||[];nid=remote.nid||0;
+        labels=remote.labels||[];lid=remote.lid||0;
+        NL.innerHTML='';SVG.innerHTML='';
+        nodes.forEach(n=>buildNode(n));
+        labels.forEach(l=>buildLabel(l));
+        setTimeout(redrawConns,80);
+      }
+    }catch(e){}
+
+    if(document.getElementById('logPanel').classList.contains('open')){
+      await loadLogsFromSupabase();
+      renderLog();
+    }
+  },5000);
 }
 
 function setTool(t){
