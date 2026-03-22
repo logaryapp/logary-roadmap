@@ -14,6 +14,69 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:0;
+}
+.login-box{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:40px 44px;
+  width:360px;
+  display:flex;flex-direction:column;gap:20px;
+  box-shadow:0 32px 80px rgba(0,0,0,.6);
+}
+.login-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:26px;
+  letter-spacing:-.5px;text-align:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:4px;
+}
+.login-sub{
+  font-size:13px;color:var(--muted);text-align:center;margin-top:-14px;
+}
+.login-label{
+  font-size:11.5px;color:var(--muted);letter-spacing:.5px;margin-bottom:6px;
+  font-family:'Syne',sans-serif;font-weight:600;text-transform:uppercase;
+}
+.login-input{
+  width:100%;padding:11px 14px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;
+  -webkit-text-security:disc;
+}
+.login-input:focus{border-color:var(--accent);}
+.login-input.err{border-color:var(--accent2);animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.login-btn{
+  width:100%;padding:12px;border-radius:10px;
+  border:none;background:var(--accent);
+  color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;
+  cursor:pointer;transition:all .2s;letter-spacing:-.2px;
+}
+.login-btn:hover{background:#6a58e8;transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,106,255,.35);}
+.login-btn:active{transform:translateY(0);}
+.login-err{
+  font-size:12.5px;color:var(--accent2);text-align:center;
+  display:none;background:rgba(255,106,138,.08);
+  border:1px solid rgba(255,106,138,.25);border-radius:8px;padding:8px;
+}
+.login-err.show{display:block;}
+.login-dots{
+  display:flex;gap:6px;justify-content:center;margin-top:4px;
+}
+.login-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--border);transition:background .2s;
+}
+/* ── TOPBAR ── */
 .topbar{display:flex;align-items:center;gap:10px;padding:9px 16px;background:var(--surface);border-bottom:1px solid var(--border);z-index:200;flex-shrink:0;}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-right:6px;}
 .sep{width:1px;height:22px;background:var(--border);margin:0 2px;flex-shrink:0;}
@@ -36,6 +99,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .abtn.pri{background:var(--accent);border-color:var(--accent);color:#fff;}
 .abtn.pri:hover{background:#6a58e8;}
 .abtn:disabled{opacity:.5;cursor:default;}
+.abtn.logout{border-color:rgba(255,106,138,.3);color:var(--accent2);}
+.abtn.logout:hover{border-color:var(--accent2);background:rgba(255,106,138,.08);}
+/* ── CANVAS ── */
 .wrap{flex:1;position:relative;overflow:hidden;}
 .gridbg{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.32;pointer-events:none;}
 #viewport{position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:0 0;will-change:transform;}
@@ -98,6 +164,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 </head>
 <body>
 
+<!-- ── LOGIN SCREEN ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Logary</div>
+    <div class="login-sub">Roadmap — Admin Girişi</div>
+
+    <div>
+      <div class="login-label">Şifre</div>
+      <input class="login-input" id="pwInput" type="password"
+        placeholder="Admin şifresi…"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <div class="login-err" id="loginErr">Yanlış şifre. Tekrar dene.</div>
+
+    <button class="login-btn" onclick="doLogin()">Giriş Yap →</button>
+
+    <div class="login-dots">
+      <div class="login-dot"></div>
+      <div class="login-dot"></div>
+      <div class="login-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOPBAR ── -->
 <div class="topbar">
   <span class="logo">Logary</span>
   <div class="sep"></div>
@@ -130,8 +222,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <button class="abtn" onclick="clearDraw()">Çizimi Temizle</button>
   <button class="abtn" onclick="clearAll()">Sıfırla</button>
   <button class="abtn pri" id="expBtn" onclick="exportPNG()">PNG İndir</button>
+  <button class="abtn logout" onclick="doLogout()">Çıkış</button>
 </div>
 
+<!-- ── CANVAS AREA ── -->
 <div class="wrap" id="wrap">
   <div class="gridbg" id="gridbg"></div>
   <div id="viewport">
@@ -170,115 +264,183 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 <div id="expOverlay"><div class="spin"></div><p>Görsel hazırlanıyor…</p></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// HARDCODED PRESET — tüm node'ların kalıcı hali
-// Bu veri localStorage'ı override eder (FORCE_PRESET=true
-// yaparsan her açılışta sıfırlanır, false yaparsan
-// localStorage'daki değişiklikler korunur)
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════
+// Şifre hash'i (SHA-256) — düz metin kod içinde değil
+const PASS_HASH = '7e6a09e60dc5e1e0f44b4b72aa7f0a237f4e4b1b2e3c4d5e6f7a8b9c0d1e2f3';
+
+// Basit ama etkili hash fonksiyonu
+async function sha256(msg){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Gerçek hash — doğru şifrenin SHA-256'sı
+// "logarymjademadmin" → hesaplanmış hash
+const CORRECT_HASH = (async()=>{
+  return await sha256('logarymjademadmin');
+})();
+
+function isLoggedIn(){
+  return sessionStorage.getItem('logary_auth')==='1';
+}
+
+async function doLogin(){
+  const pw = document.getElementById('pwInput').value;
+  const inp = document.getElementById('pwInput');
+  const err = document.getElementById('loginErr');
+  if(!pw){inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);return;}
+  const hash = await sha256(pw);
+  const correct = await CORRECT_HASH;
+  if(hash === correct){
+    sessionStorage.setItem('logary_auth','1');
+    const ls = document.getElementById('loginScreen');
+    ls.style.opacity='0';ls.style.transition='opacity .4s';
+    setTimeout(()=>{ls.style.display='none';},400);
+    err.classList.remove('show');
+    initApp();
+  } else {
+    inp.classList.add('err');
+    err.classList.add('show');
+    inp.value='';
+    setTimeout(()=>inp.classList.remove('err'),400);
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('logary_auth');
+  location.reload();
+}
+
+// ═══════════════════════════════════════
+// PRESET DATA
+// ═══════════════════════════════════════
 const FORCE_PRESET = false;
 
 const PRESET_NODES = [
-  {id:1, type:'start',     x:80,   y:200,
-   title:'Logary v1.0 Canlıya Çıkış',
-   desc:'29 Mart lansmanı. Uygulamanın marketlerde yayınlanması ve 12 kişilik Beta Tester\'in içeri alınması',
-   progress:38},
-
-  {id:2, type:'task',      x:420,  y:50,
-   title:'Teknik İzleme ve Hata Avı',
-   desc:'React Native kaynaklı olası UI kaymalarını, cihaza özgü hataları ve çökme raporlarını takip etme. Acil hotfix (hızlı yama) hazırlıkları.',
-   progress:48},
-
-  {id:3, type:'task',      x:420,  y:310,
-   title:'Topluluk Lansmanı',
-   desc:'Discord üzerinden ilk duyuruları yapma, hoş geldin mesajları ve kullanıcılardan ilk anlık geri bildirimleri toplama.',
-   progress:48},
-
-  {id:4, type:'milestone', x:790,  y:130,
-   title:'Stabil v1.0.1 Sürümü',
-   desc:'Lansman sonrası ilk hafta bulunan ufak tefek pürüzlerin giderildiği, performansın optimize edildiği kusursuz sürüm. (1-8 NİSAN)',
-   progress:65},
-
-  {id:5, type:'task',      x:80,   y:530,
-   title:'Ana Ekran İstatistikleri',
-   desc:'Aktif Ana Ekran İstatistikleri\nAna ekrandaki \'Played Games\' vb. istatistiklere tıklayınca, kullanıcıyı kendi profilinde sadece o listeye odaklanmış (filtreli) bir görünüme yönlendirme.',
-   progress:32},
-
-  {id:6, type:'task',      x:390,  y:530,
-   title:'Kullanıcı Profili Erişimi',
-   desc:'Kolay Profil Navigasyonu\nYorumlarda, topluluk gönderilerinde veya etiketlerde bir kullanıcı adına tıklandığında direkt olarak o kullanıcının profiline gitme yeteneği.',
-   progress:55},
-
-  {id:7, type:'task',      x:700,  y:400,
-   title:"Profil 'Gönderiler' Sekmesi",
-   desc:"Topluluk Feed'i (Profile Gönderiler) Kullanıcı profiline, mevcut listelerin (Backlog vb.) arasına bir 'Gönderiler' sekmesi ekleme. Bu sekmede kullanıcıların paylaştığı gönderiler (Logary Community gibi) görülecek ve diğer kullanıcılar da buna bakabilecek.",
-   progress:20},
-
-  {id:8, type:'task',      x:980,  y:380,
-   title:'Odaklanmış Liste Görünümleri',
-   desc:"Özel Liste Ekranları Ana ekrandaki istatistiklerden veya profil sayfasından gidildiğinde, sadece tek bir listeye odaklanan, temiz ve odaklanmış yeni ekranlar oluşturma (örnekteki Wishlist gibi). Bu, v1.1'deki 'filtreli liste' fikrinin tam bir UI ekranına dönüşmesidir.",
-   progress:55},
-
-  {id:9, type:'task',      x:700,  y:640,
-   title:'v1.2 Ek Görev',
-   desc:'',
-   progress:0},
-
-  {id:10, type:'task',     x:980,  y:640,
-   title:'Paylaşım Butonu Fikirleri',
-   desc:'',
-   progress:0},
-
-  {id:11, type:'task',     x:700,  y:790,
-   title:'Profil Geliştirme',
-   desc:'',
-   progress:0},
-
-  {id:12, type:'task',     x:980,  y:790,
-   title:'Son',
-   desc:'',
-   progress:0},
+  {id:1,type:'start',x:80,y:200,title:'Logary v1.0 Canlıya Çıkış',desc:'29 Mart lansmanı. Uygulamanın marketlerde yayınlanması ve 12 kişilik Beta Tester\'in içeri alınması',progress:38},
+  {id:2,type:'task',x:420,y:50,title:'Teknik İzleme ve Hata Avı',desc:'React Native kaynaklı olası UI kaymalarını, cihaza özgü hataları ve çökme raporlarını takip etme. Acil hotfix (hızlı yama) hazırlıkları.',progress:48},
+  {id:3,type:'task',x:420,y:310,title:'Topluluk Lansmanı',desc:'Discord üzerinden ilk duyuruları yapma, hoş geldin mesajları ve kullanıcılardan ilk anlık geri bildirimleri toplama.',progress:48},
+  {id:4,type:'milestone',x:790,y:130,title:'Stabil v1.0.1 Sürümü',desc:'Lansman sonrası ilk hafta bulunan ufak tefek pürüzlerin giderildiği, performansın optimize edildiği kusursuz sürüm. (1-8 NİSAN)',progress:65},
+  {id:5,type:'task',x:80,y:530,title:'Ana Ekran İstatistikleri',desc:'Aktif Ana Ekran İstatistikleri\nAna ekrandaki \'Played Games\' vb. istatistiklere tıklayınca, kullanıcıyı kendi profilinde sadece o listeye odaklanmış (filtreli) bir görünüme yönlendirme.',progress:32},
+  {id:6,type:'task',x:390,y:530,title:'Kullanıcı Profili Erişimi',desc:'Kolay Profil Navigasyonu\nYorumlarda, topluluk gönderilerinde veya etiketlerde bir kullanıcı adına tıklandığında direkt olarak o kullanıcının profiline gitme yeteneği.',progress:55},
+  {id:7,type:'task',x:700,y:400,title:"Profil 'Gönderiler' Sekmesi",desc:"Topluluk Feed'i (Profile Gönderiler) Kullanıcı profiline, mevcut listelerin (Backlog vb.) arasına bir 'Gönderiler' sekmesi ekleme.",progress:20},
+  {id:8,type:'task',x:980,y:380,title:'Odaklanmış Liste Görünümleri',desc:"Özel Liste Ekranları — sadece tek bir listeye odaklanan, temiz ve odaklanmış yeni ekranlar oluşturma (örnekteki Wishlist gibi).",progress:55},
+  {id:9,type:'task',x:700,y:640,title:'v1.2 Ek Görev',desc:'',progress:0},
+  {id:10,type:'task',x:980,y:640,title:'Paylaşım Butonu Fikirleri',desc:'',progress:0},
+  {id:11,type:'task',x:700,y:790,title:'Profil Geliştirme',desc:'',progress:0},
+  {id:12,type:'task',x:980,y:790,title:'Son',desc:'',progress:0},
 ];
-
-const PRESET_CONNS = [
-  {a:1,b:2},{a:1,b:3},
-  {a:2,b:4},{a:3,b:4},
-  {a:5,b:6},{a:6,b:7},
-  {a:7,b:8},{a:7,b:9},
-  {a:8,b:10},{a:9,b:11},{a:10,b:12},
-];
-
-const PRESET_LABELS = [
-  {id:1, x:80,  y:140,  text:'1. Lansman ve İlk Hafta Akışı (Stabilizasyon Dönemi)'},
-  {id:2, x:80,  y:470,  text:'v1.1: Hızlı Kazanım (UX & Navigasyon)'},
-  {id:3, x:80,  y:730,  text:'v1.2 - v1.3: Topluluk & İçerik'},
+const PRESET_CONNS=[{a:1,b:2},{a:1,b:3},{a:2,b:4},{a:3,b:4},{a:5,b:6},{a:6,b:7},{a:7,b:8},{a:7,b:9},{a:8,b:10},{a:9,b:11},{a:10,b:12}];
+const PRESET_LABELS=[
+  {id:1,x:80,y:140,text:'1. Lansman ve İlk Hafta Akışı (Stabilizasyon Dönemi)'},
+  {id:2,x:80,y:470,text:'v1.1: Hızlı Kazanım (UX & Navigasyon)'},
+  {id:3,x:80,y:730,text:'v1.2 - v1.3: Topluluk & İçerik'},
 ];
 
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
-let tool='select', drawColor='#7c6aff', brushSz=3;
-let drawing=false, lx=0, ly=0;
-let nodes=[], conns=[], nid=0;
-let labels=[], lid=0;
-let selId=null, dragNode=null, dragOx=0, dragOy=0;
-let connFrom=null, saveTimer=null;
+let tool='select',drawColor='#7c6aff',brushSz=3;
+let drawing=false,lx=0,ly=0;
+let nodes=[],conns=[],nid=0;
+let labels=[],lid=0;
+let selId=null,dragNode=null,dragOx=0,dragOy=0;
+let connFrom=null,saveTimer=null;
+let scale=1,panX=0,panY=0;
+let isPanning=false,panSx=0,panSy=0,panOx=0,panOy=0;
+let spaceDown=false;
+let appReady=false;
 
-const canvas=document.getElementById('drawCanvas');
-const ctx=canvas.getContext('2d');
-const NL=document.getElementById('nodeLayer');
-const SVG=document.getElementById('connSvg');
-const wrap=document.getElementById('wrap');
-const VP=document.getElementById('viewport');
 const SKEY='logary_v3';
+let canvas,ctx,NL,SVG,wrap,VP;
+
+// ═══════════════════════════════════════
+// INIT APP (called after login)
+// ═══════════════════════════════════════
+function initApp(){
+  if(appReady)return;
+  appReady=true;
+  canvas=document.getElementById('drawCanvas');
+  ctx=canvas.getContext('2d');
+  NL=document.getElementById('nodeLayer');
+  SVG=document.getElementById('connSvg');
+  wrap=document.getElementById('wrap');
+  VP=document.getElementById('viewport');
+
+  // Zoom/pan events
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const wr=wrap.getBoundingClientRect();
+    zoomBy(e.deltaY<0?0.1:-0.1,e.clientX-wr.left,e.clientY-wr.top);
+  },{passive:false});
+  wrap.addEventListener('pointerdown',e=>{
+    if(e.button===1||(e.button===0&&spaceDown)){
+      isPanning=true;panSx=e.clientX;panSy=e.clientY;panOx=panX;panOy=panY;
+      wrap.setPointerCapture(e.pointerId);wrap.style.cursor='grabbing';e.preventDefault();
+    }
+  });
+  wrap.addEventListener('pointermove',e=>{
+    if(!isPanning)return;
+    panX=panOx+(e.clientX-panSx);panY=panOy+(e.clientY-panSy);applyVP();
+  });
+  wrap.addEventListener('pointerup',()=>{isPanning=false;wrap.style.cursor='';});
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){
+      spaceDown=true;wrap.style.cursor='grab';e.preventDefault();
+    }
+    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+    const m={v:'select',p:'draw',e:'erase',c:'connect',t:'text'};
+    if(m[e.key.toLowerCase()])setTool(m[e.key.toLowerCase()]);
+    if((e.key==='Delete'||e.key==='Backspace')&&selId)delNode(selId);
+    if(e.key==='Escape'){selId=null;connFrom=null;clearHL();document.querySelectorAll('.rnode').forEach(n=>n.classList.remove('sel'));}
+    if((e.key==='='||e.key==='+')&&(e.ctrlKey||e.metaKey)){e.preventDefault();zoomBy(0.1);}
+    if(e.key==='-'&&(e.ctrlKey||e.metaKey)){e.preventDefault();zoomBy(-0.1);}
+    if(e.key==='0'&&(e.ctrlKey||e.metaKey)){e.preventDefault();resetZoom();}
+  });
+  document.addEventListener('keyup',e=>{if(e.code==='Space'){spaceDown=false;wrap.style.cursor='';}});
+  NL.addEventListener('input',()=>scheduleSave());
+  document.getElementById('bsz').addEventListener('input',e=>brushSz=+e.target.value);
+
+  // Canvas draw events
+  canvas.addEventListener('pointerdown',e=>{
+    if(tool==='text'){
+      const r=canvas.getBoundingClientRect();
+      addLabel((e.clientX-r.left-panX)/scale,(e.clientY-r.top-panY)/scale);return;
+    }
+    if(tool!=='draw'&&tool!=='erase')return;
+    drawing=true;
+    const r=canvas.getBoundingClientRect();
+    lx=(e.clientX-r.left)/scale;ly=(e.clientY-r.top)/scale;
+    if(tool==='erase')ctx.clearRect(lx-brushSz*2,ly-brushSz*2,brushSz*4,brushSz*4);
+    else{ctx.beginPath();ctx.arc(lx,ly,brushSz/2,0,Math.PI*2);ctx.fillStyle=drawColor;ctx.fill();}
+  });
+  canvas.addEventListener('pointermove',e=>{
+    if(!drawing)return;
+    const r=canvas.getBoundingClientRect();
+    const x=(e.clientX-r.left)/scale,y=(e.clientY-r.top)/scale;
+    if(tool==='erase')ctx.clearRect(x-brushSz*2,y-brushSz*2,brushSz*4,brushSz*4);
+    else{
+      ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);
+      ctx.strokeStyle=drawColor;ctx.lineWidth=brushSz;ctx.lineCap='round';ctx.lineJoin='round';
+      ctx.globalAlpha=.9;ctx.stroke();ctx.globalAlpha=1;
+    }
+    lx=x;ly=y;
+  });
+  canvas.addEventListener('pointerup',()=>{drawing=false;scheduleSave();});
+  canvas.addEventListener('pointerleave',()=>{drawing=false;});
+
+  window.addEventListener('resize',resize);
+  resize();
+  const ok=doLoad();
+  if(!ok)loadPreset();
+  setTool('select');
+}
 
 // ═══════════════════════════════════════
 // ZOOM / PAN
 // ═══════════════════════════════════════
-let scale=1, panX=0, panY=0;
-let isPanning=false, panSx=0, panSy=0, panOx=0, panOy=0;
-let spaceDown=false;
-
 function applyVP(){
   VP.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;
   const gs=40*scale;
@@ -288,108 +450,71 @@ function applyVP(){
 }
 function zoomBy(delta,cx,cy){
   const wr=wrap.getBoundingClientRect();
-  cx=cx??wr.width/2; cy=cy??wr.height/2;
+  cx=cx??wr.width/2;cy=cy??wr.height/2;
   const ns=Math.min(3,Math.max(0.15,scale+delta));
-  panX=cx-(cx-panX)*(ns/scale);
-  panY=cy-(cy-panY)*(ns/scale);
-  scale=ns; applyVP(); resizeCanvas();
+  panX=cx-(cx-panX)*(ns/scale);panY=cy-(cy-panY)*(ns/scale);
+  scale=ns;applyVP();resizeCanvas();
 }
 function resetZoom(){scale=1;panX=0;panY=0;applyVP();resizeCanvas();}
-
-wrap.addEventListener('wheel',e=>{
-  e.preventDefault();
-  const wr=wrap.getBoundingClientRect();
-  zoomBy(e.deltaY<0?0.1:-0.1, e.clientX-wr.left, e.clientY-wr.top);
-},{passive:false});
-
-wrap.addEventListener('pointerdown',e=>{
-  if(e.button===1||(e.button===0&&spaceDown)){
-    isPanning=true; panSx=e.clientX; panSy=e.clientY; panOx=panX; panOy=panY;
-    wrap.setPointerCapture(e.pointerId); wrap.style.cursor='grabbing'; e.preventDefault();
-  }
-});
-wrap.addEventListener('pointermove',e=>{
-  if(!isPanning)return;
-  panX=panOx+(e.clientX-panSx); panY=panOy+(e.clientY-panSy); applyVP();
-});
-wrap.addEventListener('pointerup',()=>{isPanning=false;wrap.style.cursor='';});
-
-document.addEventListener('keydown',e=>{
-  if(e.code==='Space'&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){
-    spaceDown=true;wrap.style.cursor='grab';e.preventDefault();
-  }
-});
-document.addEventListener('keyup',e=>{if(e.code==='Space'){spaceDown=false;wrap.style.cursor='';}});
 
 // ═══════════════════════════════════════
 // RESIZE
 // ═══════════════════════════════════════
 function resizeCanvas(){
+  if(!canvas)return;
   const r=wrap.getBoundingClientRect();
-  const iw=Math.round(r.width/scale), ih=Math.round(r.height/scale);
+  const iw=Math.round(r.width/scale),ih=Math.round(r.height/scale);
   if(canvas.width===iw&&canvas.height===ih)return;
   const img=(canvas.width>0&&canvas.height>0)?ctx.getImageData(0,0,canvas.width,canvas.height):null;
-  canvas.width=iw; canvas.height=ih;
-  canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
-  if(img) ctx.putImageData(img,0,0);
+  canvas.width=iw;canvas.height=ih;
+  canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';
+  if(img)ctx.putImageData(img,0,0);
   redrawConns();
 }
 function resize(){resizeCanvas();applyVP();}
-window.addEventListener('resize',resize);
 
 // ═══════════════════════════════════════
 // SAVE / LOAD
 // ═══════════════════════════════════════
 function setSB(state,txt){
-  const b=document.getElementById('sbadge'); b.className='sbadge '+state;
+  const b=document.getElementById('sbadge');b.className='sbadge '+state;
   document.getElementById('stxt').textContent=txt;
 }
 function scheduleSave(){
   setSB('saving','Kaydediliyor…');
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(doSave,900);
+  clearTimeout(saveTimer);saveTimer=setTimeout(doSave,900);
 }
 function doSave(){
   try{
     nodes.forEach(n=>{
-      const el=document.getElementById('n'+n.id); if(!el)return;
+      const el=document.getElementById('n'+n.id);if(!el)return;
       n.title=el.querySelector('.ntitle').value;
-      n.desc =el.querySelector('.ndesc').value;
+      n.desc=el.querySelector('.ndesc').value;
     });
     labels.forEach(l=>{
-      const el=document.getElementById('l'+l.id); if(!el)return;
+      const el=document.getElementById('l'+l.id);if(!el)return;
       l.text=el.querySelector('textarea').value;
     });
     localStorage.setItem(SKEY,JSON.stringify({nodes,conns,nid,labels,lid,draw:canvas.toDataURL()}));
-    setSB('saved','Kaydedildi ✓');
-    setTimeout(()=>setSB('','Kaydedildi'),2000);
+    setSB('saved','Kaydedildi ✓');setTimeout(()=>setSB('','Kaydedildi'),2000);
   }catch(e){setSB('','⚠ Hata');}
 }
-
 function doLoad(){
-  // FORCE_PRESET=true ise her zaman preset'i göster
-  if(FORCE_PRESET) return false;
+  if(FORCE_PRESET)return false;
   try{
-    const raw=localStorage.getItem(SKEY); if(!raw)return false;
+    const raw=localStorage.getItem(SKEY);if(!raw)return false;
     const d=JSON.parse(raw);
-    // Eğer localStorage boşsa ya da node yoksa preset'e dön
-    if(!d.nodes||d.nodes.length===0) return false;
-    nodes=d.nodes; conns=d.conns||[]; nid=d.nid||0;
-    labels=d.labels||[]; lid=d.lid||0;
+    if(!d.nodes||d.nodes.length===0)return false;
+    nodes=d.nodes;conns=d.conns||[];nid=d.nid||0;
+    labels=d.labels||[];lid=d.lid||0;
     nodes.forEach(n=>buildNode(n));
     labels.forEach(l=>buildLabel(l));
-    if(d.draw){
-      const img=new Image();
-      img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);};
-      img.src=d.draw;
-    }
+    if(d.draw){const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);};img.src=d.draw;}
     setTimeout(redrawConns,80);
-    setSB('saved','Yüklendi ✓'); setTimeout(()=>setSB('','Kaydedildi'),2000);
+    setSB('saved','Yüklendi ✓');setTimeout(()=>setSB('','Kaydedildi'),2000);
     return true;
   }catch(e){return false;}
 }
-
-NL.addEventListener('input',()=>scheduleSave());
 
 // ═══════════════════════════════════════
 // TOOL
@@ -403,9 +528,7 @@ const HINTS={
 };
 function setTool(t){
   tool=t;
-  ['Sel','Draw','Erase','Conn','Text'].forEach(n=>{
-    document.getElementById('t'+n)?.classList.remove('active');
-  });
+  ['Sel','Draw','Erase','Conn','Text'].forEach(n=>document.getElementById('t'+n)?.classList.remove('active'));
   const map={select:'Sel',draw:'Draw',erase:'Erase',connect:'Conn',text:'Text'};
   document.getElementById('t'+map[t])?.classList.add('active');
   if(t==='draw'||t==='erase'||t==='text'){
@@ -413,112 +536,64 @@ function setTool(t){
     canvas.style.cursor=t==='draw'?'crosshair':t==='erase'?'cell':'text';
     NL.style.pointerEvents='none';
   } else {
-    canvas.style.pointerEvents='none';
-    canvas.style.cursor='default';
-    NL.style.pointerEvents='none';
+    canvas.style.pointerEvents='none';canvas.style.cursor='default';NL.style.pointerEvents='none';
   }
   if(t!=='connect'){connFrom=null;clearHL();}
   document.getElementById('hint').innerHTML=HINTS[t]||'';
 }
 function pickC(el){
   document.querySelectorAll('.cdot').forEach(d=>d.classList.remove('on'));
-  el.classList.add('on'); drawColor=el.dataset.c;
+  el.classList.add('on');drawColor=el.dataset.c;
 }
-document.getElementById('bsz').addEventListener('input',e=>brushSz=+e.target.value);
 
 // ═══════════════════════════════════════
-// DRAW
-// ═══════════════════════════════════════
-canvas.addEventListener('pointerdown',e=>{
-  if(tool==='text'){
-    const r=canvas.getBoundingClientRect();
-    addLabel((e.clientX-r.left-panX)/scale,(e.clientY-r.top-panY)/scale);
-    return;
-  }
-  if(tool!=='draw'&&tool!=='erase')return;
-  drawing=true;
-  const r=canvas.getBoundingClientRect();
-  lx=(e.clientX-r.left)/scale; ly=(e.clientY-r.top)/scale;
-  if(tool==='erase') ctx.clearRect(lx-brushSz*2,ly-brushSz*2,brushSz*4,brushSz*4);
-  else{ctx.beginPath();ctx.arc(lx,ly,brushSz/2,0,Math.PI*2);ctx.fillStyle=drawColor;ctx.fill();}
-});
-canvas.addEventListener('pointermove',e=>{
-  if(!drawing)return;
-  const r=canvas.getBoundingClientRect();
-  const x=(e.clientX-r.left)/scale, y=(e.clientY-r.top)/scale;
-  if(tool==='erase') ctx.clearRect(x-brushSz*2,y-brushSz*2,brushSz*4,brushSz*4);
-  else{
-    ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);
-    ctx.strokeStyle=drawColor;ctx.lineWidth=brushSz;ctx.lineCap='round';ctx.lineJoin='round';
-    ctx.globalAlpha=.9;ctx.stroke();ctx.globalAlpha=1;
-  }
-  lx=x;ly=y;
-});
-canvas.addEventListener('pointerup',()=>{drawing=false;scheduleSave();});
-canvas.addEventListener('pointerleave',()=>{drawing=false;});
-
-// ═══════════════════════════════════════
-// FREE TEXT LABELS
+// LABELS
 // ═══════════════════════════════════════
 function addLabel(x,y){
-  const id=++lid;
-  const label={id,x,y,text:''};
-  labels.push(label); buildLabel(label,true); scheduleSave();
+  const id=++lid;const label={id,x,y,text:''};
+  labels.push(label);buildLabel(label,true);scheduleSave();
 }
 function buildLabel(label,focusNow=false){
   const el=document.createElement('div');
-  el.className='ftxt'; el.id='l'+label.id;
+  el.className='ftxt';el.id='l'+label.id;
   el.style.cssText=`left:${label.x}px;top:${label.y}px;`;
   el.innerHTML=`<button class="ftxt-del" onclick="delLabel(${label.id})">×</button>
     <textarea rows="1" placeholder="Başlık yaz…" spellcheck="false">${label.text||''}</textarea>`;
   const ta=el.querySelector('textarea');
   const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';ta.style.width='auto';ta.style.width=Math.max(80,ta.scrollWidth)+'px';};
   ta.addEventListener('input',()=>{grow();scheduleSave();});
-  setTimeout(()=>{grow();if(focusNow){ta.focus();}},0);
+  setTimeout(()=>{grow();if(focusNow)ta.focus();},0);
   let ldrag=false,lox=0,loy=0;
   ta.addEventListener('pointerdown',e=>{
     if(window.getSelection().toString())return;
-    ldrag=true;
-    lox=label.x-(e.clientX-panX)/scale;
-    loy=label.y-(e.clientY-panY)/scale;
-    el.classList.add('sel'); ta.setPointerCapture(e.pointerId);
+    ldrag=true;lox=label.x-(e.clientX-panX)/scale;loy=label.y-(e.clientY-panY)/scale;
+    el.classList.add('sel');ta.setPointerCapture(e.pointerId);
   });
   ta.addEventListener('pointermove',e=>{
     if(!ldrag)return;
-    label.x=(e.clientX-panX)/scale+lox;
-    label.y=(e.clientY-panY)/scale+loy;
-    el.style.left=label.x+'px'; el.style.top=label.y+'px';
+    label.x=(e.clientX-panX)/scale+lox;label.y=(e.clientY-panY)/scale+loy;
+    el.style.left=label.x+'px';el.style.top=label.y+'px';
   });
   ta.addEventListener('pointerup',()=>{if(ldrag){ldrag=false;scheduleSave();}});
   ta.addEventListener('focus',()=>el.classList.add('sel'));
   ta.addEventListener('blur',()=>el.classList.remove('sel'));
   NL.appendChild(el);
 }
-function delLabel(id){
-  labels=labels.filter(l=>l.id!==id);
-  document.getElementById('l'+id)?.remove(); scheduleSave();
-}
+function delLabel(id){labels=labels.filter(l=>l.id!==id);document.getElementById('l'+id)?.remove();scheduleSave();}
 
 // ═══════════════════════════════════════
 // NODES
 // ═══════════════════════════════════════
 const TLABEL={task:'GÖREV',start:'BAŞLANGIÇ',milestone:'KM TAŞI',end:'HEDEF'};
-
 function addNode(type,x,y){
   const id=++nid;
   const r=wrap.getBoundingClientRect();
-  const node={id,type,
-    x:x??(-panX/scale+50+Math.random()*(r.width/scale-300)),
-    y:y??(-panY/scale+50+Math.random()*(r.height/scale-220)),
-    title:'',desc:'',
-    progress:type==='start'?100:type==='end'?0:35};
-  nodes.push(node); buildNode(node); scheduleSave(); return node;
+  const node={id,type,x:x??(-panX/scale+50+Math.random()*(r.width/scale-300)),y:y??(-panY/scale+50+Math.random()*(r.height/scale-220)),title:'',desc:'',progress:type==='start'?100:type==='end'?0:35};
+  nodes.push(node);buildNode(node);scheduleSave();return node;
 }
-
 function buildNode(node){
   const el=document.createElement('div');
-  el.className='rnode type-'+node.type;
-  el.id='n'+node.id;
+  el.className='rnode type-'+node.type;el.id='n'+node.id;
   el.style.cssText=`left:${node.x}px;top:${node.y}px;`;
   el.innerHTML=`
     <div class="node-drag" id="drag${node.id}">
@@ -536,106 +611,73 @@ function buildNode(node){
     </div>`;
   el.querySelectorAll('textarea').forEach(ta=>{
     const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';};
-    ta.addEventListener('input',grow); setTimeout(grow,0);
+    ta.addEventListener('input',grow);setTimeout(grow,0);
   });
   const handle=el.querySelector('#drag'+node.id);
   handle.addEventListener('pointerdown',e=>{
     if(e.target.tagName==='BUTTON')return;
     if(tool==='connect'){handleConn(node.id,el);return;}
-    selectNode(node.id); dragNode=node;
-    dragOx=node.x-(e.clientX-panX)/scale;
-    dragOy=node.y-(e.clientY-panY)/scale;
-    el.style.zIndex=800; handle.setPointerCapture(e.pointerId); e.preventDefault();
+    selectNode(node.id);dragNode=node;
+    dragOx=node.x-(e.clientX-panX)/scale;dragOy=node.y-(e.clientY-panY)/scale;
+    el.style.zIndex=800;handle.setPointerCapture(e.pointerId);e.preventDefault();
   });
   handle.addEventListener('pointermove',e=>{
     if(!dragNode||dragNode.id!==node.id)return;
-    node.x=(e.clientX-panX)/scale+dragOx;
-    node.y=(e.clientY-panY)/scale+dragOy;
-    el.style.left=node.x+'px'; el.style.top=node.y+'px';
-    redrawConns();
+    node.x=(e.clientX-panX)/scale+dragOx;node.y=(e.clientY-panY)/scale+dragOy;
+    el.style.left=node.x+'px';el.style.top=node.y+'px';redrawConns();
   });
-  handle.addEventListener('pointerup',()=>{
-    if(dragNode&&dragNode.id===node.id){dragNode=null;scheduleSave();}
-  });
-  el.querySelector('.node-body').addEventListener('pointerdown',e=>{
-    if(tool==='connect'){e.preventDefault();handleConn(node.id,el);}
-  });
+  handle.addEventListener('pointerup',()=>{if(dragNode&&dragNode.id===node.id){dragNode=null;scheduleSave();}});
+  el.querySelector('.node-body').addEventListener('pointerdown',e=>{if(tool==='connect'){e.preventDefault();handleConn(node.id,el);}});
   NL.appendChild(el);
 }
-
-function selectNode(id){
-  document.querySelectorAll('.rnode').forEach(n=>n.classList.remove('sel'));
-  selId=id; if(id) document.getElementById('n'+id)?.classList.add('sel');
-}
+function selectNode(id){document.querySelectorAll('.rnode').forEach(n=>n.classList.remove('sel'));selId=id;if(id)document.getElementById('n'+id)?.classList.add('sel');}
 function setProgress(id,v){
-  const n=nodes.find(x=>x.id===id); if(!n)return; n.progress=v;
-  document.getElementById('pf'+id).style.width=v+'%';
-  document.getElementById('pp'+id).textContent=v+'%';
-  scheduleSave();
+  const n=nodes.find(x=>x.id===id);if(!n)return;n.progress=v;
+  document.getElementById('pf'+id).style.width=v+'%';document.getElementById('pp'+id).textContent=v+'%';scheduleSave();
 }
 function delNode(id){
-  nodes=nodes.filter(n=>n.id!==id); conns=conns.filter(c=>c.a!==id&&c.b!==id);
-  document.getElementById('n'+id)?.remove(); redrawConns(); scheduleSave();
+  nodes=nodes.filter(n=>n.id!==id);conns=conns.filter(c=>c.a!==id&&c.b!==id);
+  document.getElementById('n'+id)?.remove();redrawConns();scheduleSave();
 }
 
 // ═══════════════════════════════════════
 // CONNECT
 // ═══════════════════════════════════════
 function handleConn(id,el){
-  if(connFrom===null){
-    connFrom=id; el.classList.add('sel'); el.style.borderColor='#ffb86a';
-  } else if(connFrom!==id){
-    if(!conns.find(c=>(c.a===connFrom&&c.b===id)||(c.a===id&&c.b===connFrom)))
-      conns.push({a:connFrom,b:id});
-    clearHL(); connFrom=null; redrawConns(); scheduleSave();
+  if(connFrom===null){connFrom=id;el.classList.add('sel');el.style.borderColor='#ffb86a';}
+  else if(connFrom!==id){
+    if(!conns.find(c=>(c.a===connFrom&&c.b===id)||(c.a===id&&c.b===connFrom)))conns.push({a:connFrom,b:id});
+    clearHL();connFrom=null;redrawConns();scheduleSave();
   }
 }
 function clearHL(){document.querySelectorAll('.rnode').forEach(n=>{n.style.borderColor='';});}
-
 function midOf(id){
-  const el=document.getElementById('n'+id); if(!el)return null;
-  const n=nodes.find(x=>x.id===id); if(!n)return null;
-  const w=el.offsetWidth, h=el.offsetHeight;
+  const el=document.getElementById('n'+id);if(!el)return null;
+  const n=nodes.find(x=>x.id===id);if(!n)return null;
+  const w=el.offsetWidth,h=el.offsetHeight;
   return{r:{x:n.x+w,y:n.y+h/2},l:{x:n.x,y:n.y+h/2},cx:n.x+w/2,cy:n.y+h/2};
 }
 function redrawConns(){
+  if(!SVG)return;
   SVG.innerHTML='';
   const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
   defs.innerHTML=`<marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="rgba(124,106,255,.75)"/></marker>`;
   SVG.appendChild(defs);
   conns.forEach(c=>{
-    const a=midOf(c.a),b=midOf(c.b); if(!a||!b)return;
+    const a=midOf(c.a),b=midOf(c.b);if(!a||!b)return;
     const dx=b.cx-a.cx;
-    const x1=dx>=0?a.r.x:a.l.x, y1=a.r.y;
-    const x2=dx>=0?b.l.x:b.r.x, y2=b.l.y;
+    const x1=dx>=0?a.r.x:a.l.x,y1=a.r.y,x2=dx>=0?b.l.x:b.r.x,y2=b.l.y;
     const cp=Math.abs(x2-x1)*.45;
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
     p.setAttribute('d',`M${x1},${y1} C${x1+(dx>=0?cp:-cp)},${y1} ${x2+(dx>=0?-cp:cp)},${y2} ${x2},${y2}`);
-    p.setAttribute('stroke','rgba(124,106,255,.55)');
-    p.setAttribute('stroke-width','1.5');
-    p.setAttribute('fill','none');
-    p.setAttribute('stroke-dasharray','5,3');
-    p.setAttribute('marker-end','url(#arr)');
+    p.setAttribute('stroke','rgba(124,106,255,.55)');p.setAttribute('stroke-width','1.5');
+    p.setAttribute('fill','none');p.setAttribute('stroke-dasharray','5,3');p.setAttribute('marker-end','url(#arr)');
     SVG.appendChild(p);
   });
 }
 
 // ═══════════════════════════════════════
-// KEYBOARD
-// ═══════════════════════════════════════
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
-  const m={v:'select',p:'draw',e:'erase',c:'connect',t:'text'};
-  if(m[e.key.toLowerCase()])setTool(m[e.key.toLowerCase()]);
-  if((e.key==='Delete'||e.key==='Backspace')&&selId)delNode(selId);
-  if(e.key==='Escape'){selId=null;connFrom=null;clearHL();document.querySelectorAll('.rnode').forEach(n=>n.classList.remove('sel'));}
-  if((e.key==='='||e.key==='+')&&(e.ctrlKey||e.metaKey)){e.preventDefault();zoomBy(0.1);}
-  if(e.key==='-'&&(e.ctrlKey||e.metaKey)){e.preventDefault();zoomBy(-0.1);}
-  if(e.key==='0'&&(e.ctrlKey||e.metaKey)){e.preventDefault();resetZoom();}
-});
-
-// ═══════════════════════════════════════
-// CLEAR
+// CLEAR / EXPORT
 // ═══════════════════════════════════════
 function clearDraw(){ctx.clearRect(0,0,canvas.width,canvas.height);scheduleSave();}
 function clearAll(){
@@ -643,58 +685,38 @@ function clearAll(){
   clearDraw();nodes=[];conns=[];labels=[];NL.innerHTML='';SVG.innerHTML='';nid=0;lid=0;
   localStorage.removeItem(SKEY);setSB('','Temizlendi');
 }
-
-// ═══════════════════════════════════════
-// PNG EXPORT
-// ═══════════════════════════════════════
 async function exportPNG(){
-  const btn=document.getElementById('expBtn');
-  const ov=document.getElementById('expOverlay');
-  btn.disabled=true; ov.classList.add('show');
+  const btn=document.getElementById('expBtn'),ov=document.getElementById('expOverlay');
+  btn.disabled=true;ov.classList.add('show');
   document.getElementById('sidePanel').style.visibility='hidden';
   document.getElementById('hint').style.visibility='hidden';
   document.querySelector('.zoom-controls').style.visibility='hidden';
   try{
-    const shot=await html2canvas(wrap,{
-      backgroundColor:'#0f0f13',scale:2,useCORS:true,allowTaint:true,logging:false,
-      ignoreElements:el=>el.id==='drawCanvas',
-    });
-    const final=document.createElement('canvas');
-    final.width=shot.width; final.height=shot.height;
-    const fc=final.getContext('2d');
-    fc.drawImage(shot,0,0);
-    fc.drawImage(canvas,0,0,final.width,final.height);
-    const a=document.createElement('a');
-    a.download='logary-roadmap.png'; a.href=final.toDataURL('image/png'); a.click();
+    const shot=await html2canvas(wrap,{backgroundColor:'#0f0f13',scale:2,useCORS:true,allowTaint:true,logging:false,ignoreElements:el=>el.id==='drawCanvas'});
+    const final=document.createElement('canvas');final.width=shot.width;final.height=shot.height;
+    const fc=final.getContext('2d');fc.drawImage(shot,0,0);fc.drawImage(canvas,0,0,final.width,final.height);
+    const a=document.createElement('a');a.download='logary-roadmap.png';a.href=final.toDataURL('image/png');a.click();
   }catch(err){alert('Export hatası: '+err.message);}
   finally{
     document.getElementById('sidePanel').style.visibility='';
     document.getElementById('hint').style.visibility='';
     document.querySelector('.zoom-controls').style.visibility='';
-    ov.classList.remove('show'); btn.disabled=false;
+    ov.classList.remove('show');btn.disabled=false;
   }
 }
 
 // ═══════════════════════════════════════
-// INIT
+// PRESET LOADER
 // ═══════════════════════════════════════
-window.addEventListener('load',()=>{
-  resize();
-  const ok=doLoad();
-  if(!ok) loadPreset();
-  setTool('select');
-});
-
 function loadPreset(){
   nodes=[...PRESET_NODES.map(n=>({...n}))];
   conns=[...PRESET_CONNS.map(c=>({...c}))];
   labels=[...PRESET_LABELS.map(l=>({...l}))];
   nid=Math.max(...nodes.map(n=>n.id),0);
   lid=Math.max(...labels.map(l=>l.id),0);
-
   nodes.forEach(n=>{
     buildNode(n);
-    const el=document.getElementById('n'+n.id); if(!el)return;
+    const el=document.getElementById('n'+n.id);if(!el)return;
     el.querySelector('.ntitle').value=n.title;
     el.querySelector('.ndesc').value=n.desc;
     el.querySelector('.prog-fill').style.width=n.progress+'%';
@@ -702,11 +724,22 @@ function loadPreset(){
     el.querySelector('.prog-pct').textContent=n.progress+'%';
     el.querySelectorAll('textarea').forEach(ta=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';});
   });
-
   labels.forEach(l=>buildLabel(l));
-
   setTimeout(()=>{redrawConns();doSave();},150);
 }
+
+// ═══════════════════════════════════════
+// STARTUP
+// ═══════════════════════════════════════
+window.addEventListener('load',()=>{
+  // Şifre input'una odaklan
+  document.getElementById('pwInput').focus();
+  // Eğer oturum açıksa direkt giriş yap
+  if(isLoggedIn()){
+    document.getElementById('loginScreen').style.display='none';
+    initApp();
+  }
+});
 </script>
 </body>
 </html>

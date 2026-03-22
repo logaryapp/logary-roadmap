@@ -17,7 +17,7 @@ Right now, our complete focus is on a smooth release on app stores and deliverin
 Below you can find our short and long-term goals for Logary. This list will be continuously updated based on your feedback.
 
 ### 🟢 Phase 1: Launch & Stabilization (v1.0)
-- [x] Submitting the app to stores.
+- [ ] Submitting the app to stores.
 - [ ] March 29 Launch.
 - [ ] Onboarding early adopters and community (Discord) engagement.
 - [ ] Performance improvements and UI/UX hotfixes.
