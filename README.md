@@ -1,45 +1,46 @@
-<h1 align="center">🚀 Logary Public Roadmap</h1>
+<h1 align="center">Logary Product Roadmap</h1>
 
 <div align="center">
-  <p>Organize your gaming world, track your stats, and engage with the gaming community. We are building the future of Logary together with our community!</p>
+  <p>The official public roadmap for Logary. We are dedicated to providing the ultimate platform for gamers to organize their libraries, track statistics, and connect with a global community.</p>
 </div>
 
 ---
 
-## 📌 Status: Launch Preparation
-**Target Release Date:** March 29
-Right now, our complete focus is on a smooth release on app stores and delivering a flawless initial user experience.
+## 📊 Current Status: Pre-Launch
+**Expected Rollout:** March 29
+Our engineering and product teams are currently finalizing the core infrastructure for the global release across major app stores. The primary objective for this phase is ensuring platform stability, data integrity, and an optimized onboarding experience for our early adopters.
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Release Strategy
 
-Below you can find our short and long-term goals for Logary. This list will be continuously updated based on your feedback.
+The following timeline outlines the strategic development phases for Logary. This roadmap is dynamic and subject to adjustments based on strategic priorities and community feedback.
 
-### 🟢 Phase 1: Launch & Stabilization (v1.0)
-- [ ] Submitting the app to stores.
-- [ ] March 29 Launch.
-- [ ] Onboarding early adopters and community (Discord) engagement.
-- [ ] Performance improvements and UI/UX hotfixes.
+### Phase 1: Core Launch & Stabilization (v1.0)
+* **Global Deployment:** Official release on iOS and Android platforms.
+* **Platform Stability:** Monitoring initial server loads, resolving edge-case bugs, and delivering rapid UI/UX optimization patches.
+* **Community Infrastructure:** Establishing initial communication channels and user support systems.
 
-### 🟡 Phase 2: Quick Wins & Fluidity (v1.1)
-- [ ] **Seamless Profile Navigation:** Navigating directly to user profiles when clicking on their names in comments or community posts.
-- [ ] **Active Home Screen Stats:** Tapping on stats like 'Played' or 'Playing' on the home screen directly opens a filtered, focused list view.
+### Phase 2: User Experience (UX) Enhancements (v1.1)
+* **Streamlined Navigation:** Implementing deep-linking to allow seamless transitions directly to user profiles from comments and community posts.
+* **Dynamic Dashboard Integration:** Upgrading the home screen analytics to provide users with instant access to filtered, state-specific library views (e.g., 'Playing', 'Played').
 
-### 🔵 Phase 3: Community & Content (v1.2)
-- [ ] **Dedicated List Screens:** Clean, dedicated new UI screens for specific lists like Wishlist and Backlog.
-- [ ] **Profile Posts (Feed):** Adding a 'Posts' tab to user profiles to boost platform interaction.
+### Phase 3: Social & Content Expansion (v1.2)
+* **Dedicated Library Interfaces:** Introducing specialized, high-fidelity UI screens for granular list management, such as Wishlists and Backlogs.
+* **Social Activity Feed:** Integrating a dedicated 'Posts' module within user profiles to foster community engagement, content discovery, and inter-user interaction.
 
-### 🟣 Phase 4: Vision Feature (v2.0)
-- [ ] **Logary Stories (AI-Powered):** 30-second short story sharing feature (Instagram style).
-- [ ] **AI Moderation Infrastructure:** Background AI integration to ensure stories align with the gaming concept and do not violate community guidelines.
+### Phase 4: Next-Gen Features (v2.0)
+* **Logary Stories:** Developing a multimedia sharing ecosystem allowing users to post 30-second gaming highlights.
+* **Automated Content Moderation:** Deploying a proprietary, AI-driven moderation infrastructure to ensure all community content aligns with platform guidelines and maintains a strict gaming focus.
 
 ---
 
-## 💡 Feedback & Ideas
-We are growing Logary with your ideas! To suggest a new feature or report a bug:
-Join our [Discord Server](https://discord.gg/bhDFNWXE97) to share your thoughts with us in real-time.
+## 🌐 Community & Feedback
+Community feedback is integral to Logary's product development lifecycle. We invite users, beta testers, and partners to share feature requests and report issues directly to our team.
+
+* **Official Network:** Join the [Logary Discord Server](https://discord.gg/bhDFNWXE97) for real-time announcements, official support, and community discussions.
 
 <div align="center">
-  <sub>Developed with ❤️ by the Logary Team.</sub>
+  <br>
+  <sub>© 2026 Logary Technologies. All rights reserved.</sub>
 </div>

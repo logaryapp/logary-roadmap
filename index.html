@@ -151,6 +151,19 @@ body{display:flex;flex-direction:column;}
 .prog-pct{font-size:10px;color:var(--muted);width:26px;text-align:right;font-family:'DM Sans',monospace;}
 .prog-range{width:52px;height:3px;-webkit-appearance:none;appearance:none;background:transparent;border:none;outline:none;cursor:pointer;}
 .prog-range::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);cursor:pointer;}
+.node-dc-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:7px 12px;border:none;
+  background:rgba(88,101,242,.12);
+  color:#7289da;
+  font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:all .18s;
+  border-top:1px solid var(--border);
+  pointer-events:all;
+}
+.node-dc-btn:hover{background:rgba(88,101,242,.28);color:#fff;}
+.node-dc-btn.sending{opacity:.5;cursor:default;pointer-events:none;}
+.node-dc-btn.sent{background:rgba(106,255,204,.15);color:var(--accent3);}
 .rnode.type-start .node-tag{color:var(--accent3);}
 .rnode.type-start .ndot{background:var(--accent3);}
 .rnode.type-start{border-color:rgba(106,255,204,.22);}
@@ -1116,9 +1129,7 @@ function addNode(type,x,y){
   const node={id,type,x:x??(-panX/scale+50+Math.random()*(r.width/scale-300)),y:y??(-panY/scale+50+Math.random()*(r.height/scale-220)),title:'',desc:'',progress:type==='start'?100:type==='end'?0:35};
   nodes.push(node);buildNode(node);scheduleSave();
   logAdd('node',`Node eklendi: ${TLABEL[type]||type}`,`Pozisyon: ${Math.round(node.x)}, ${Math.round(node.y)}`);
-  sendDiscord('node', type, TLABEL[type]||type, '', node.progress);
-  return node;
-}
+  return node;}
 function buildNode(node){
   const el=document.createElement('div');
   el.className='rnode type-'+node.type;el.id='n'+node.id;
@@ -1137,6 +1148,22 @@ function buildNode(node){
       <input class="prog-range" type="range" min="0" max="100" value="${node.progress}" oninput="setProgress(${node.id},+this.value)">
       <span class="prog-pct" id="pp${node.id}">${node.progress}%</span>
     </div>`;
+  let dcSent=false;
+  let dcTimer=null;
+  function tryDC(){
+    if(dcSent) return;
+    clearTimeout(dcTimer);
+    dcTimer=setTimeout(()=>{
+      const title=el.querySelector('.ntitle').value.trim();
+      if(!title) return;
+      node.title=el.querySelector('.ntitle').value;
+      node.desc=el.querySelector('.ndesc').value;
+      dcSent=true;
+      sendDiscord('node', node.type, node.title, node.desc, node.progress);
+      logAdd('node',`Discord'a gönderildi: ${node.title}`,`%${node.progress}`);
+    }, 800);
+  }
+
   el.querySelectorAll('textarea').forEach(ta=>{
     const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';};
     let editTimer=null;
@@ -1146,14 +1173,13 @@ function buildNode(node){
       editTimer=setTimeout(()=>{
         const field=ta.classList.contains('ntitle')?'Başlık':'Açıklama';
         logAdd('edit',`${field} düzenlendi`,ta.value.slice(0,60)+(ta.value.length>60?'…':''));
-        const el2=document.getElementById('n'+node.id);
-        const t=el2?.querySelector('.ntitle')?.value||'';
-        const d=el2?.querySelector('.ndesc')?.value||'';
-        sendDiscord('edit', node.type, t||'(başlıksız)', d, node.progress);
       },2000);
     });
+    ta.addEventListener('blur', tryDC);
     setTimeout(grow,0);
   });
+
+  el.querySelector('.prog-range').addEventListener('change', tryDC);
   const handle=el.querySelector('#drag'+node.id);
   handle.addEventListener('pointerdown',e=>{
     if(e.target.tagName==='BUTTON')return;
@@ -1177,7 +1203,6 @@ function setProgress(id,v){
   const old=n.progress; n.progress=v;
   document.getElementById('pf'+id).style.width=v+'%';document.getElementById('pp'+id).textContent=v+'%';
   logAdd('progress',`İlerleme güncellendi: ${n.title||'(başlıksız)'}`,`%${old} → %${v}`);
-  sendDiscord('progress', n.type, n.title||'(başlıksız)', '', v, `%${old} → %${v}`);
   scheduleSave();
 }
 function delNode(id){
