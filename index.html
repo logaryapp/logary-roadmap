@@ -562,43 +562,119 @@ function initApp(){
   const mobBsz=document.getElementById('bszMob');
   if(mobBsz) mobBsz.addEventListener('input',e=>{brushSz=+e.target.value;document.getElementById('bsz').value=e.target.value;});
 
-  // Touch pinch-to-zoom
-  let lastTouchDist=0;
-  wrap.addEventListener('touchstart',e=>{
-    if(e.touches.length===2){
-      lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    }
-  },{passive:true});
-  wrap.addEventListener('touchmove',e=>{
-    if(e.touches.length===2){
-      e.preventDefault();
-      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      const cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
-      const cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
-      const wr=wrap.getBoundingClientRect();
-      zoomBy((dist-lastTouchDist)*0.005,cx-wr.left,cy-wr.top);
-      lastTouchDist=dist;
-    }
-  },{passive:false});
+  // ═══════════════════════════════════════
+  // TOUCH SYSTEM — tek parmak pan, iki parmak pinch-zoom
+  // ═══════════════════════════════════════
+  let t1={id:-1,x:0,y:0}, t2={id:-1,x:0,y:0};
+  let tPanOx=0, tPanOy=0;
+  let tPinchDist=0, tPinchScale=1, tPinchPanOx=0, tPinchPanOy=0;
+  let tNodeId=null, tNodeOx=0, tNodeOy=0; // for node dragging via touch
+  let tMode='none'; // 'pan' | 'pinch' | 'nodedrag' | 'draw'
 
-  // One-finger pan in select mode on mobile
-  let touchPanActive=false,tpSx=0,tpSy=0,tpOx=0,tpOy=0;
-  wrap.addEventListener('touchstart',e=>{
-    if(e.touches.length===1&&tool==='select'){
-      // Only pan if not touching a node
-      if(e.target===canvas||e.target===wrap||e.target.id==='gridbg'||e.target.id==='connSvg'){
-        touchPanActive=true;tpSx=e.touches[0].clientX;tpSy=e.touches[0].clientY;tpOx=panX;tpOy=panY;
+  function getTouchById(list,id){for(let t of list)if(t.identifier===id)return t;return null;}
+
+  VP.addEventListener('touchstart',e=>{
+    // node drag: touch started ON a node-drag handle
+    for(let t of e.changedTouches){
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      const dragEl=el?.closest('.node-drag');
+      if(dragEl&&tool!=='connect'){
+        const nid=+dragEl.id.replace('drag','');
+        const node=nodes.find(x=>x.id===nid);
+        if(node){
+          tMode='nodedrag'; tNodeId=nid;
+          tNodeOx=node.x-(t.clientX-panX)/scale;
+          tNodeOy=node.y-(t.clientY-panY)/scale;
+          t1={id:t.identifier,x:t.clientX,y:t.clientY};
+          selectNode(nid);
+          const nel=document.getElementById('n'+nid);
+          if(nel)nel.style.zIndex=800;
+          e.stopPropagation();
+          return;
+        }
       }
     }
   },{passive:true});
-  wrap.addEventListener('touchmove',e=>{
-    if(touchPanActive&&e.touches.length===1){
-      panX=tpOx+(e.touches[0].clientX-tpSx);
-      panY=tpOy+(e.touches[0].clientY-tpSy);
-      applyVP();
+
+  wrap.addEventListener('touchstart',e=>{
+    if(tMode==='nodedrag')return;
+
+    // Draw/erase mode — let canvas handle it
+    if(tool==='draw'||tool==='erase'){tMode='draw';return;}
+
+    const ct=e.changedTouches;
+    if(e.touches.length===1){
+      t1={id:ct[0].identifier,x:ct[0].clientX,y:ct[0].clientY};
+      tPanOx=panX; tPanOy=panY;
+      tMode='pan';
+    } else if(e.touches.length===2){
+      t1={id:e.touches[0].identifier,x:e.touches[0].clientX,y:e.touches[0].clientY};
+      t2={id:e.touches[1].identifier,x:e.touches[1].clientX,y:e.touches[1].clientY};
+      tPinchDist=Math.hypot(t1.x-t2.x,t1.y-t2.y);
+      tPinchScale=scale; tPinchPanOx=panX; tPinchPanOy=panY;
+      tMode='pinch';
     }
   },{passive:true});
-  wrap.addEventListener('touchend',()=>{touchPanActive=false;});
+
+  wrap.addEventListener('touchmove',e=>{
+    if(tMode==='draw')return;
+    e.preventDefault();
+
+    if(tMode==='nodedrag'&&e.touches.length>=1){
+      const t=getTouchById(e.touches,t1.id)||e.touches[0];
+      const node=nodes.find(x=>x.id===tNodeId);
+      if(node){
+        node.x=(t.clientX-panX)/scale+tNodeOx;
+        node.y=(t.clientY-panY)/scale+tNodeOy;
+        const nel=document.getElementById('n'+node.id);
+        if(nel){nel.style.left=node.x+'px';nel.style.top=node.y+'px';}
+        redrawConns();
+      }
+      return;
+    }
+
+    if(tMode==='pan'&&e.touches.length===1){
+      const t=e.touches[0];
+      panX=tPanOx+(t.clientX-t1.x);
+      panY=tPanOy+(t.clientY-t1.y);
+      applyVP(); return;
+    }
+
+    if(tMode==='pinch'&&e.touches.length===2){
+      const ta=e.touches[0], tb=e.touches[1];
+      const dist=Math.hypot(ta.clientX-tb.clientX,ta.clientY-tb.clientY);
+      const ratio=dist/tPinchDist;
+      const ns=Math.min(3,Math.max(0.15,tPinchScale*ratio));
+      const cx=(ta.clientX+tb.clientX)/2;
+      const cy=(ta.clientY+tb.clientY)/2;
+      const wr=wrap.getBoundingClientRect();
+      const ox=cx-wr.left, oy=cy-wr.top;
+      panX=ox-(ox-tPinchPanOx)*(ns/tPinchScale);
+      panY=oy-(oy-tPinchPanOy)*(ns/tPinchScale);
+      scale=ns; applyVP(); resizeCanvas(); return;
+    }
+
+    // Switched from 1 finger to 2 mid-gesture
+    if(tMode==='pan'&&e.touches.length===2){
+      t1={id:e.touches[0].identifier,x:e.touches[0].clientX,y:e.touches[0].clientY};
+      t2={id:e.touches[1].identifier,x:e.touches[1].clientX,y:e.touches[1].clientY};
+      tPinchDist=Math.hypot(t1.x-t2.x,t1.y-t2.y);
+      tPinchScale=scale; tPinchPanOx=panX; tPinchPanOy=panY;
+      tMode='pinch';
+    }
+  },{passive:false});
+
+  wrap.addEventListener('touchend',e=>{
+    if(tMode==='nodedrag'){scheduleSave();}
+    if(e.touches.length===0){tMode='none';tNodeId=null;}
+    else if(e.touches.length===1&&tMode==='pinch'){
+      // back to single finger pan
+      t1={id:e.touches[0].identifier,x:e.touches[0].clientX,y:e.touches[0].clientY};
+      tPanOx=panX; tPanOy=panY; tMode='pan';
+    }
+  },{passive:true});
+
+  wrap.addEventListener('touchcancel',()=>{tMode='none';tNodeId=null;},{passive:true});
   canvas.addEventListener('pointerdown',e=>{
     if(tool==='text'){
       const r=canvas.getBoundingClientRect();

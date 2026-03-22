@@ -38,7 +38,7 @@ Below you can find our short and long-term goals for Logary. This list will be c
 
 ## 💡 Feedback & Ideas
 We are growing Logary with your ideas! To suggest a new feature or report a bug:
-1. Join our [Discord Server](https://discord.gg/bhDFNWXE97) to share your thoughts with us in real-time.
+Join our [Discord Server](https://discord.gg/bhDFNWXE97) to share your thoughts with us in real-time.
 
 <div align="center">
   <sub>Developed with ❤️ by the Logary Team.</sub>
