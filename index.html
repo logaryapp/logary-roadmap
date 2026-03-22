@@ -160,6 +160,99 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #expOverlay p{color:var(--text);font-size:13.5px;}
 .spin{width:34px;height:34px;border:3px solid rgba(124,106,255,.3);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
+
+/* ── MOBILE BOTTOM TOOLBAR ── */
+.mob-bar{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:8px 12px 12px;
+  flex-direction:column;gap:8px;
+}
+.mob-tools{display:flex;gap:6px;justify-content:center;}
+.mob-btn{
+  flex:1;max-width:64px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:10px;border:1px solid transparent;
+  background:transparent;color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:10px;cursor:pointer;transition:all .15s;
+}
+.mob-btn svg{width:20px;height:20px;}
+.mob-btn.active{background:var(--accent);color:#fff;border-color:transparent;}
+.mob-btn:hover{background:var(--surface2);color:var(--text);}
+.mob-colors{display:flex;gap:8px;justify-content:center;align-items:center;padding:2px 0;}
+.mob-actions{display:flex;gap:6px;}
+.mob-actions .abtn{flex:1;text-align:center;font-size:12px;padding:7px 4px;}
+
+/* ── MOBILE SIDE PANEL → BOTTOM SHEET ── */
+.mob-node-sheet{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  background:var(--surface);border-top:1px solid var(--border);
+  border-radius:20px 20px 0 0;
+  padding:16px;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.mob-node-sheet.open{transform:translateY(0);}
+.mob-sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 14px;}
+.mob-sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mob-sheet-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;border:1px solid var(--border);border-radius:10px;
+  background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:13px;cursor:pointer;transition:all .15s;
+}
+.mob-sheet-btn:hover{background:var(--surface2);border-color:var(--accent);}
+.mob-sheet-close{
+  width:100%;margin-top:10px;padding:10px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;
+}
+.mob-overlay{
+  display:none;position:fixed;inset:0;z-index:390;
+  background:rgba(0,0,0,.5);
+}
+.mob-overlay.show{display:block;}
+
+/* ── RESPONSIVE BREAKPOINTS ── */
+@media(max-width:768px){
+  /* Login box */
+  .login-box{width:calc(100vw - 32px);padding:28px 24px;}
+
+  /* Hide desktop topbar tools, show mobile bar */
+  .topbar .sep,
+  .topbar .tbtn,
+  .topbar .cdot,
+  .topbar .bslider,
+  .topbar .sbadge,
+  .topbar .abtn:not(.logout-top){display:none!important;}
+  .topbar{padding:8px 14px;justify-content:space-between;}
+  .logo{margin-right:0;}
+
+  /* Show mobile bar */
+  .mob-bar{display:flex;}
+  .mob-node-sheet{display:block;}
+
+  /* Canvas hint hidden on mobile */
+  .hint{display:none;}
+
+  /* Side panel hidden on mobile (replaced by sheet) */
+  .side-panel{display:none;}
+
+  /* Zoom controls repositioned above mob bar */
+  .zoom-controls{bottom:160px;right:10px;}
+
+  /* Nodes slightly narrower */
+  .rnode{width:200px;}
+
+  /* Wrap needs bottom padding for mob bar */
+  .wrap{padding-bottom:130px;}
+}
+@media(max-width:400px){
+  .login-box{padding:24px 18px;}
+  .mob-btn{font-size:9px;padding:6px 2px;}
+}
 </style>
 </head>
 <body>
@@ -262,6 +355,68 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 </div>
 
 <div id="expOverlay"><div class="spin"></div><p>Görsel hazırlanıyor…</p></div>
+
+<!-- ── MOBILE BOTTOM BAR ── -->
+<div class="mob-bar" id="mobBar">
+  <div class="mob-tools">
+    <button class="mob-btn active" id="mtSel" onclick="setTool('select')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 7z"/></svg>Seç
+    </button>
+    <button class="mob-btn" id="mtDraw" onclick="setTool('draw')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Kalem
+    </button>
+    <button class="mob-btn" id="mtErase" onclick="setTool('erase')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16l11-11 6 6z"/><path d="M6 17l-3-3"/></svg>Silgi
+    </button>
+    <button class="mob-btn" id="mtConn" onclick="setTool('connect')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 6h6l-3 12"/></svg>Bağla
+    </button>
+    <button class="mob-btn" id="mtText" onclick="setTool('text')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>Metin
+    </button>
+    <button class="mob-btn" onclick="toggleNodeSheet()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>Ekle
+    </button>
+  </div>
+  <div class="mob-colors">
+    <div class="cdot on" style="background:#7c6aff" data-c="#7c6aff" onclick="pickC(this)"></div>
+    <div class="cdot" style="background:#ff6a8a" data-c="#ff6a8a" onclick="pickC(this)"></div>
+    <div class="cdot" style="background:#6affcc" data-c="#6affcc" onclick="pickC(this)"></div>
+    <div class="cdot" style="background:#ffb86a" data-c="#ffb86a" onclick="pickC(this)"></div>
+    <div class="cdot" style="background:#e8e8f0" data-c="#e8e8f0" onclick="pickC(this)"></div>
+    <input class="bslider" style="width:80px;margin-left:6px;" id="bszMob" type="range" min="1" max="20" value="3">
+  </div>
+  <div class="mob-actions">
+    <button class="abtn" style="flex:1;text-align:center;" onclick="clearDraw()">Çizimi Temizle</button>
+    <button class="abtn pri" style="flex:1;text-align:center;" onclick="exportPNG()">PNG</button>
+    <button class="abtn logout" style="flex:1;text-align:center;" onclick="doLogout()">Çıkış</button>
+  </div>
+</div>
+
+<!-- ── MOBILE NODE SHEET ── -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeNodeSheet()"></div>
+<div class="mob-node-sheet" id="mobSheet">
+  <div class="mob-sheet-handle"></div>
+  <div class="mob-sheet-grid">
+    <button class="mob-sheet-btn" onclick="addNode('task');closeNodeSheet()">
+      <span style="font-size:18px;">📋</span>
+      <div><div style="font-weight:600;">Görev</div><div style="font-size:11px;color:var(--muted)">Yapılacak adım</div></div>
+    </button>
+    <button class="mob-sheet-btn" onclick="addNode('start');closeNodeSheet()">
+      <span style="font-size:18px;">🚀</span>
+      <div><div style="font-weight:600;">Başlangıç</div><div style="font-size:11px;color:var(--muted)">Yolculuğun başı</div></div>
+    </button>
+    <button class="mob-sheet-btn" onclick="addNode('milestone');closeNodeSheet()">
+      <span style="font-size:18px;">🏁</span>
+      <div><div style="font-weight:600;">Kilometre Taşı</div><div style="font-size:11px;color:var(--muted)">Önemli dönüm</div></div>
+    </button>
+    <button class="mob-sheet-btn" onclick="addNode('end');closeNodeSheet()">
+      <span style="font-size:18px;">🎯</span>
+      <div><div style="font-weight:600;">Hedef</div><div style="font-size:11px;color:var(--muted)">Bitiş noktası</div></div>
+    </button>
+  </div>
+  <button class="mob-sheet-close" onclick="closeNodeSheet()">Kapat</button>
+</div>
 
 <script>
 // ═══════════════════════════════════════
@@ -403,7 +558,47 @@ function initApp(){
   NL.addEventListener('input',()=>scheduleSave());
   document.getElementById('bsz').addEventListener('input',e=>brushSz=+e.target.value);
 
-  // Canvas draw events
+  // Sync mob brush slider
+  const mobBsz=document.getElementById('bszMob');
+  if(mobBsz) mobBsz.addEventListener('input',e=>{brushSz=+e.target.value;document.getElementById('bsz').value=e.target.value;});
+
+  // Touch pinch-to-zoom
+  let lastTouchDist=0;
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){
+      lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    }
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    if(e.touches.length===2){
+      e.preventDefault();
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      const cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
+      const wr=wrap.getBoundingClientRect();
+      zoomBy((dist-lastTouchDist)*0.005,cx-wr.left,cy-wr.top);
+      lastTouchDist=dist;
+    }
+  },{passive:false});
+
+  // One-finger pan in select mode on mobile
+  let touchPanActive=false,tpSx=0,tpSy=0,tpOx=0,tpOy=0;
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===1&&tool==='select'){
+      // Only pan if not touching a node
+      if(e.target===canvas||e.target===wrap||e.target.id==='gridbg'||e.target.id==='connSvg'){
+        touchPanActive=true;tpSx=e.touches[0].clientX;tpSy=e.touches[0].clientY;tpOx=panX;tpOy=panY;
+      }
+    }
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    if(touchPanActive&&e.touches.length===1){
+      panX=tpOx+(e.touches[0].clientX-tpSx);
+      panY=tpOy+(e.touches[0].clientY-tpSy);
+      applyVP();
+    }
+  },{passive:true});
+  wrap.addEventListener('touchend',()=>{touchPanActive=false;});
   canvas.addEventListener('pointerdown',e=>{
     if(tool==='text'){
       const r=canvas.getBoundingClientRect();
@@ -528,9 +723,13 @@ const HINTS={
 };
 function setTool(t){
   tool=t;
+  // Desktop buttons
   ['Sel','Draw','Erase','Conn','Text'].forEach(n=>document.getElementById('t'+n)?.classList.remove('active'));
   const map={select:'Sel',draw:'Draw',erase:'Erase',connect:'Conn',text:'Text'};
   document.getElementById('t'+map[t])?.classList.add('active');
+  // Mobile buttons
+  ['Sel','Draw','Erase','Conn','Text'].forEach(n=>document.getElementById('mt'+n)?.classList.remove('active'));
+  document.getElementById('mt'+map[t])?.classList.add('active');
   if(t==='draw'||t==='erase'||t==='text'){
     canvas.style.pointerEvents='all';
     canvas.style.cursor=t==='draw'?'crosshair':t==='erase'?'cell':'text';
@@ -680,6 +879,16 @@ function redrawConns(){
 // CLEAR / EXPORT
 // ═══════════════════════════════════════
 function clearDraw(){ctx.clearRect(0,0,canvas.width,canvas.height);scheduleSave();}
+
+// ── MOBILE SHEET ──
+function toggleNodeSheet(){
+  document.getElementById('mobSheet').classList.toggle('open');
+  document.getElementById('mobOverlay').classList.toggle('show');
+}
+function closeNodeSheet(){
+  document.getElementById('mobSheet').classList.remove('open');
+  document.getElementById('mobOverlay').classList.remove('show');
+}
 function clearAll(){
   if(!confirm('Her şey silinecek. Devam?'))return;
   clearDraw();nodes=[];conns=[];labels=[];NL.innerHTML='';SVG.innerHTML='';nid=0;lid=0;
