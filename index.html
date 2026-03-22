@@ -1032,10 +1032,11 @@ async function sendBugToDiscord(content,mediaUrls=[]){
       footer:{text:'Logary Bug Reports'},
       timestamp:new Date().toISOString()
     }];
-    if(mediaUrls.length>0){
-      const imgUrl=mediaUrls.find(u=>!u.match(/\.(mp4|webm|mov)/i));
-      if(imgUrl)embeds[0].image={url:imgUrl};
-    }
+    const imgUrls=mediaUrls.filter(u=>!u.match(/\.(mp4|webm|mov)/i));
+    const videoUrls=mediaUrls.filter(u=>u.match(/\.(mp4|webm|mov)/i));
+    if(imgUrls.length>0) embeds[0].image={url:imgUrls[0]};
+    imgUrls.slice(1).forEach(u=>embeds.push({image:{url:u},color:0xff6a8a}));
+    if(videoUrls.length>0) embeds[0].fields.push({name:'🎥 Video',value:videoUrls.map(u=>`[İzle](${u})`).join('\n'),inline:false});
     await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds})});
   }catch(e){console.warn('Bug Discord hatası:',e);}
 }
@@ -1044,16 +1045,48 @@ async function sendReply(id){
   const input=document.getElementById('ri'+id);
   const reply=input?.value?.trim();if(!reply)return;
   try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{headers:SUPA_HEADERS});
+    const rows=await res.json();
+    const bug=rows?.[0];
     await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({reply})});
-    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds:[{title:'💬 Bug Yanıtlandı',description:reply,color:0x7ab4e8,footer:{text:'Logary Bug Reports'},timestamp:new Date().toISOString()}]})});
+    const embeds=[{
+      title:'💬 Bug Yanıtlandı',
+      description:reply,
+      color:0x7ab4e8,
+      fields:[{name:'Bug İçeriği',value:(bug?.content||'(yok)').slice(0,300),inline:false}],
+      footer:{text:'Logary Bug Reports'},
+      timestamp:new Date().toISOString()
+    }];
+    if(bug?.media_url){
+      const urls=bug.media_url.split(',').filter(Boolean);
+      const imgUrl=urls.find(u=>!u.match(/\.(mp4|webm|mov)/i));
+      if(imgUrl)embeds[0].image={url:imgUrl};
+    }
+    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds})});
     loadBugs();
   }catch(e){alert('Yanıt gönderilemedi');}
 }
 
 async function resolveBug(id){
   try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{headers:SUPA_HEADERS});
+    const rows=await res.json();
+    const bug=rows?.[0];
     await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({status:'resolved'})});
-    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds:[{title:'✅ Bug Çözüldü',description:`Bug #${id} çözüldü olarak işaretlendi.`,color:0x6affcc,footer:{text:'Logary Bug Reports'},timestamp:new Date().toISOString()}]})});
+    const embeds=[{
+      title:'✅ Bug Çözüldü',
+      description:(bug?.content||'(yok)').slice(0,300),
+      color:0x6affcc,
+      fields:[{name:'Durum',value:'✅ Çözüldü',inline:true}],
+      footer:{text:'Logary Bug Reports'},
+      timestamp:new Date().toISOString()
+    }];
+    if(bug?.media_url){
+      const urls=bug.media_url.split(',').filter(Boolean);
+      const imgUrl=urls.find(u=>!u.match(/\.(mp4|webm|mov)/i));
+      if(imgUrl)embeds[0].image={url:imgUrl};
+    }
+    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds})});
     loadBugs();
   }catch(e){}
 }
