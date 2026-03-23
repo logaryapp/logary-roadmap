@@ -3,11 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Logary">
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3665/3665939.png">
 <title>Logary Roadmap</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1030,33 +1025,16 @@ async function submitBug(){
 async function sendBugToDiscord(content,mediaUrls=[],rawFiles=[]){
   try{
     const now=new Date();
-    const payload={
-      username:'Logary Bug Bot',
-      embeds:[{
-        title:'🐛 Yeni Bug Raporu',
-        description:content||'(açıklama yok)',
-        color:0xff6a8a,
-        fields:[
-          {name:'Durum',value:'🔴 Açık',inline:true},
-          {name:'Zaman',value:now.toLocaleString('tr-TR'),inline:true}
-        ],
-        footer:{text:'Logary Bug Reports'},
-        timestamp:now.toISOString()
-      }]
-    };
-
-    if(rawFiles.length>0){
+    const timeStr=now.toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const validFiles=rawFiles.filter(Boolean);
+    const msgText=`🐛 **Bug Raporu**\n━━━━━━━━━━━━━━━━━━━━\n${content||'(açıklama yok)'}\n━━━━━━━━━━━━━━━━━━━━\n🔴 **Durum:** Açık　　🕐 **Zaman:** ${timeStr}`;
+    if(validFiles.length>0){
       const form=new FormData();
-      form.append('payload_json',JSON.stringify(payload));
-      const imageFiles=rawFiles.filter(f=>f&&f.type.startsWith('image/'));
-      const videoFiles=rawFiles.filter(f=>f&&f.type.startsWith('video/'));
-      imageFiles.slice(0,4).forEach((f,i)=>form.append(`files[${i}]`,f,f.name));
-      if(imageFiles.length>0) payload.embeds[0].image={url:`attachment://${imageFiles[0].name}`};
-      if(videoFiles.length>0) payload.embeds[0].fields.push({name:'🎥 Video',value:mediaUrls.filter(u=>u.match(/\.(mp4|webm|mov)/i)).map(u=>`[İzle](${u})`).join('\n'),inline:false});
-      form.set('payload_json',JSON.stringify(payload));
+      form.append('payload_json',JSON.stringify({username:'Logary Bug Bot',content:msgText}));
+      validFiles.forEach((f,i)=>form.append(`files[${i}]`,f,f.name));
       await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',body:form});
     } else {
-      await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',content:msgText})});
     }
   }catch(e){console.warn('Bug Discord hatası:',e);}
 }
@@ -1069,20 +1047,9 @@ async function sendReply(id){
     const rows=await res.json();
     const bug=rows?.[0];
     await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({reply})});
-    const embeds=[{
-      title:'💬 Bug Yanıtlandı',
-      description:reply,
-      color:0x7ab4e8,
-      fields:[{name:'Bug İçeriği',value:(bug?.content||'(yok)').slice(0,300),inline:false}],
-      footer:{text:'Logary Bug Reports'},
-      timestamp:new Date().toISOString()
-    }];
-    if(bug?.media_url){
-      const urls=bug.media_url.split(',').filter(Boolean);
-      const imgUrl=urls.find(u=>!u.match(/\.(mp4|webm|mov)/i));
-      if(imgUrl)embeds[0].image={url:imgUrl};
-    }
-    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds})});
+    const timeStr=new Date().toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const msgText=`💬 **Bug Yanıtlandı**\n━━━━━━━━━━━━━━━━━━━━\n📋 **Bug:** ${(bug?.content||'(yok)').slice(0,200)}\n💬 **Yanıt:** ${reply}\n━━━━━━━━━━━━━━━━━━━━\n🕐 **Zaman:** ${timeStr}`;
+    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',content:msgText})});
     loadBugs();
   }catch(e){alert('Yanıt gönderilemedi');}
 }
@@ -1093,20 +1060,9 @@ async function resolveBug(id){
     const rows=await res.json();
     const bug=rows?.[0];
     await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({status:'resolved'})});
-    const embeds=[{
-      title:'✅ Bug Çözüldü',
-      description:(bug?.content||'(yok)').slice(0,300),
-      color:0x6affcc,
-      fields:[{name:'Durum',value:'✅ Çözüldü',inline:true}],
-      footer:{text:'Logary Bug Reports'},
-      timestamp:new Date().toISOString()
-    }];
-    if(bug?.media_url){
-      const urls=bug.media_url.split(',').filter(Boolean);
-      const imgUrl=urls.find(u=>!u.match(/\.(mp4|webm|mov)/i));
-      if(imgUrl)embeds[0].image={url:imgUrl};
-    }
-    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',embeds})});
+    const timeStr=new Date().toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const msgText=`✅ **Bug Çözüldü**\n━━━━━━━━━━━━━━━━━━━━\n${(bug?.content||'(yok)').slice(0,200)}\n━━━━━━━━━━━━━━━━━━━━\n✅ **Durum:** Çözüldü　　🕐 **Zaman:** ${timeStr}`;
+    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',content:msgText})});
     loadBugs();
   }catch(e){}
 }
@@ -1122,15 +1078,6 @@ function openLightbox(url){
   lb.classList.add('show');
 }
 function closeLightbox(){document.getElementById('lightbox').classList.remove('show');}
-  
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Logary PWA Hazır.'))
-        .catch(err => console.log('SW hatası:', err));
-    });
-  }
-
 </script>
 </body>
 </html>
