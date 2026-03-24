@@ -179,7 +179,6 @@ body{display:flex;flex-direction:column;}
 .toast{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px 14px;font-size:12.5px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;min-width:200px;max-width:320px;pointer-events:all;animation:toastIn .25s ease;transition:opacity .3s,transform .3s;}
 .toast.out{opacity:0;transform:translateX(20px);}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.toast-icon{font-size:15px;flex-shrink:0;}
 .toast-msg{flex:1;line-height:1.3;}
 .toast.info{border-color:rgba(124,106,255,.4);}
 .toast.success{border-color:rgba(106,255,204,.4);}
@@ -236,47 +235,32 @@ body.fullscreen .zoom-controls{bottom:14px;}
 .fullscreen-exit{display:none;position:fixed;top:10px;right:10px;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;}
 body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
 
-@media(max-width:768px){
-  .online-pill,.progress-summary,.search-wrap{display:none!important;}
-  #toastContainer{top:auto;bottom:calc(140px + env(safe-area-inset-bottom));right:10px;left:10px;}
-  .toast{min-width:unset;}
-}
-@media(max-width:768px){
-  .login-box{width:calc(100vw - 32px);padding:28px 24px;}
-  .topbar .sep,.topbar .tbtn,.topbar .cdot,.topbar .bslider,.topbar .sbadge,.topbar .abtn,.topbar .bug-topbar-btn{display:none!important;}
-  .topbar{padding:10px 16px;}
-  .logo{font-size:19px;}
-  .mob-bar{display:flex;}
-  .mob-node-sheet{display:block;}
-  .hint{display:none;}
-  .side-panel{display:none;}
-  .zoom-controls{bottom:calc(130px + env(safe-area-inset-bottom));right:12px;}
-  .rnode{width:200px;}
-  .wrap{overflow:hidden;}
-  #bugPanel{width:100%;border-right:none;top:auto;bottom:0;height:88vh;transform:translateY(100%);border-radius:20px 20px 0 0;box-shadow:0 -16px 48px rgba(0,0,0,.5);}
-  #bugPanel.open{transform:translateY(0);}
-  #logPanel{width:100%;border-left:none;top:auto;bottom:0;height:88vh;transform:translateY(100%);border-radius:20px 20px 0 0;box-shadow:0 -16px 48px rgba(0,0,0,.5);}
-  #logPanel.open{transform:translateY(0);}
-}
 /* ── BUG REPORT PANEL ── */
-#bugPanel{position:fixed;top:0;left:0;bottom:0;z-index:500;width:420px;max-width:100vw;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:12px 0 48px rgba(0,0,0,.5);}
-#bugPanel.open{transform:translateX(0);}
-.bug-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.bug-header-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;}
-.bug-header-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);flex-shrink:0;}
-.bug-close{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.bug-close:hover{border-color:var(--accent2);color:var(--accent2);}
-.bug-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
-.bug-tab{flex:1;padding:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;}
-.bug-tab.on{color:var(--accent2);border-bottom-color:var(--accent2);}
-.bug-list{flex:1;overflow-y:auto;padding:10px;}
+#bugPanel { position: fixed; top: 0; left: 0; bottom: 0; z-index: 500; width: 420px; max-width: 100vw; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(-100%); transition: transform .28s cubic-bezier(.4, 0, .2, 1); box-shadow: 12px 0 48px rgba(0,0,0,.5); overflow: hidden; }
+#bugPanel.open { transform: translateX(0); }
+.bug-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
+.bug-header-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.bug-header-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; }
+.bug-close { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.bug-close:hover { border-color: var(--accent2); color: var(--accent2); }
+
+.bug-panel-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+.bug-main { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.bug-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.bug-tab { flex: 1; padding: 10px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; border: none; background: transparent; border-bottom: 2px solid transparent; transition: all .15s; }
+.bug-tab.on { color: var(--accent2); border-bottom-color: var(--accent2); }
+.bug-list { flex: 1; overflow-y: auto; padding: 16px; }
+
 .bug-item{background:var(--node-bg);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
 .bug-item:hover{border-color:rgba(255,106,138,.3);}
-.bug-item.resolved{border-color:rgba(106,255,204,.25);opacity:.75;}
+.bug-item.resolved,.bug-item.duplicate,.bug-item.not_a_bug{border-color:rgba(106,255,204,.25);opacity:.75;}
 .bug-item-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 0;}
 .bug-status{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:4px;}
 .bug-status.open{background:rgba(255,106,138,.15);color:var(--accent2);border:1px solid rgba(255,106,138,.3);}
 .bug-status.resolved{background:rgba(106,255,204,.12);color:var(--accent3);border:1px solid rgba(106,255,204,.25);}
+.bug-status.investigating{background:rgba(255,184,106,.15);color:#ffb86a;border:1px solid rgba(255,184,106,.3);}
+.bug-status.duplicate{background:rgba(196,106,255,.15);color:#c46aff;border:1px solid rgba(196,106,255,.3);}
+.bug-status.not_a_bug{background:rgba(232,232,240,.1);color:var(--muted);border:1px solid rgba(232,232,240,.2);}
 .bug-time{font-size:10px;color:var(--muted);}
 .bug-content{padding:8px 12px;font-size:12.5px;color:var(--text);line-height:1.5;white-space:pre-wrap;word-break:break-word;}
 .bug-media{padding:0 12px 8px;display:flex;gap:6px;flex-wrap:wrap;}
@@ -290,42 +274,91 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
 .bug-action-btn:hover{border-color:var(--accent);color:var(--accent);}
 .bug-action-btn.resolve{border-color:rgba(106,255,204,.3);color:var(--accent3);}
 .bug-action-btn.resolve:hover{background:rgba(106,255,204,.1);}
-.bug-new{flex-shrink:0;border-top:1px solid var(--border);padding:14px;}
-.bug-new-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-.bug-new-ta{width:100%;min-height:80px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none;line-height:1.5;transition:border-color .2s;touch-action:auto;}
-.bug-new-ta:focus{border-color:var(--accent2);}
-.bug-new-ta::placeholder{color:var(--muted);}
-.bug-media-row{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap;}
-.bug-preview{position:relative;width:64px;height:52px;}
-.bug-preview img,.bug-preview video{width:64px;height:52px;border-radius:8px;object-fit:cover;border:1px solid var(--border);}
-.bug-preview-del{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:var(--accent2);color:#fff;font-size:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.bug-upload-btn{width:52px;height:52px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.bug-upload-btn:hover{border-color:var(--accent2);color:var(--accent2);}
-.bug-send-row{display:flex;gap:8px;margin-top:10px;}
-.bug-send-btn{flex:1;padding:10px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;}
-.bug-send-btn:hover{background:#e8557a;}
-.bug-send-btn:disabled{opacity:.5;cursor:default;}
-.bug-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:10px;color:var(--muted);font-size:13px;}
-.bug-empty-icon{font-size:40px;opacity:.35;}
 .bug-reply-input{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12.5px;outline:none;margin-bottom:6px;transition:border-color .2s;}
 .bug-reply-input:focus{border-color:var(--accent3);}
 .bug-reply-submit{width:100%;padding:8px;border-radius:8px;border:none;background:var(--accent3);color:var(--ink,#0f0f13);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;}
 .bug-reply-submit:hover{opacity:.85;}
+.bug-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:10px;color:var(--muted);font-size:13px;}
+.bug-empty-icon{font-size:40px;opacity:.35;}
 
-/* Bug buton topbar'da */
-.bug-topbar-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border:1px solid rgba(255,106,138,.3);border-radius:8px;background:transparent;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:12.5px;cursor:pointer;transition:all .15s;}
-.bug-topbar-btn:hover{background:rgba(255,106,138,.08);}
-.bug-topbar-btn svg{width:14px;height:14px;}
-/* Mobil bug butonu */
-.mob-bug-btn{width:44px;height:44px;border-radius:11px;border:1px solid rgba(255,106,138,.3);background:transparent;color:var(--accent2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;}
-.mob-bug-btn:active{transform:scale(.93);}
+.bug-author-badge { font-size: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 600; background: rgba(124,106,255,0.15); border: 1px solid rgba(124,106,255,0.3); padding: 3px 8px; border-radius: 6px; }
+.bug-type-badge { font-size: 10px; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 500; background: var(--surface2); border: 1px solid var(--border); padding: 3px 8px; border-radius: 6px; }
+.bug-device-badge { font-size: 10px; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 500; background: transparent; border: 1px dashed var(--border); padding: 3px 8px; border-radius: 6px; }
+.admin-status-sel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 
-/* Lightbox */
+.bug-sidebar { display: flex; flex-direction: column; flex-shrink: 0; }
+.bug-new { flex-shrink: 0; border-top: 1px solid var(--border); padding: 14px; background: var(--surface); }
+.bug-new-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.bug-new-type { width: 100%; padding: 10px 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; transition: border-color .2s; }
+.bug-new-type:focus { border-color: var(--accent2); }
+.bug-new-ta { width: 100%; min-height: 80px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; resize: none; outline: none; line-height: 1.5; transition: border-color .2s; touch-action: auto; }
+.bug-new-ta:focus { border-color: var(--accent2); }
+.bug-new-ta::placeholder { color: var(--muted); }
+.bug-media-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+.bug-preview { position: relative; width: 64px; height: 52px; }
+.bug-preview img, .bug-preview video { width: 64px; height: 52px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+.bug-preview-del { position: absolute; top: -5px; right: -5px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); color: #fff; font-size: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.bug-upload-btn { width: 52px; height: 52px; border-radius: 8px; border: 1.5px dashed var(--border); background: transparent; color: var(--muted); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.bug-upload-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+.bug-send-row { display: flex; gap: 8px; margin-top: 10px; }
+.bug-send-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; background: var(--accent2); color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: all .2s; }
+.bug-send-btn:hover { background: #e8557a; }
+.bug-send-btn:disabled { opacity: .5; cursor: default; }
+
+@media(max-width:768px){
+  #bugPanel { width: 100%; border-right: none; top: auto; bottom: 0; height: 88vh; transform: translateY(100%); border-radius: 20px 20px 0 0; box-shadow: 0 -16px 48px rgba(0,0,0,.5); }
+  #bugPanel.open { transform: translateY(0); }
+  .bug-header { padding: 16px; }
+  .bug-tabs { padding: 0 16px; }
+  .bug-list { padding: 16px; }
+  .bug-main, .bug-sidebar { border-radius: 12px; }
+}
+
+body.tester-mode .topbar,
+body.tester-mode .wrap,
+body.tester-mode .mob-bar,
+body.tester-mode .side-panel,
+body.tester-mode .zoom-controls,
+body.tester-mode .fullscreen-exit,
+body.tester-mode #shortcutsPanel {
+  display: none !important;
+}
+
+body.tester-mode #bugPanel {
+  width: 100vw !important; max-width: 100vw !important; height: 100vh !important;
+  position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+  border: none !important; box-shadow: none !important; transform: translateX(0) translateY(0) !important;
+  border-radius: 0 !important; background: var(--bg);
+}
+
+body.tester-mode .bug-header { padding: 20px 32px; background: var(--surface); border-bottom: 1px solid var(--border); }
+body.tester-mode .bug-close { display: none !important; }
+
+body.tester-mode .bug-panel-body { flex-direction: row; padding: 24px 32px; gap: 24px; }
+body.tester-mode .bug-main { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+body.tester-mode .bug-sidebar { width: 380px; border-top: none; background: transparent; display: flex; flex-direction: column; gap: 20px; }
+body.tester-mode .bug-new { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+
+.bug-tester-logout { display: none; padding: 8px 16px; border-radius: 10px; background: rgba(255,106,138,.1); color: var(--accent2); border: 1px solid rgba(255,106,138,.3); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.bug-tester-logout:hover { background: rgba(255,106,138,.2); transform: translateY(-1px); }
+body.tester-mode .bug-tester-logout { display: block; }
+
+@media(max-width: 900px) {
+  body.tester-mode .bug-panel-body { flex-direction: column; padding: 16px; gap: 16px;}
+  body.tester-mode .bug-sidebar { width: 100%; }
+}
+
 #lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;}
 #lightbox.show{display:flex;}
 #lightbox img,#lightbox video{max-width:92vw;max-height:88vh;border-radius:12px;}
-#lightbox-close{position:absolute;top:18px;right:20px;background:transparent;border:none;color:#fff;font-size:28px;cursor:pointer;}</style>
+#lightbox-close{position:absolute;top:18px;right:20px;background:transparent;border:none;color:#fff;font-size:28px;cursor:pointer;}
 
+.bug-topbar-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border:1px solid rgba(255,106,138,.3);border-radius:8px;background:transparent;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:12.5px;cursor:pointer;transition:all .15s;}
+.bug-topbar-btn:hover{background:rgba(255,106,138,.08);}
+.bug-topbar-btn svg{width:14px;height:14px;}
+.mob-bug-btn{width:44px;height:44px;border-radius:11px;border:1px solid rgba(255,106,138,.3);background:transparent;color:var(--accent2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.mob-bug-btn:active{transform:scale(.93);}
+</style>
 </head>
 <body>
 
@@ -335,7 +368,7 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
     <div class="login-sub">Roadmap — Admin Girişi</div>
     <div>
       <div class="login-label">Şifre</div>
-      <input class="login-input" id="pwInput" type="password" placeholder="Admin şifresi…" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="login-input" id="pwInput" type="password" placeholder="Admin veya Tester şifresi…" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div class="login-err" id="loginErr">Yanlış şifre. Tekrar dene.</div>
     <button class="login-btn" onclick="doLogin()">Giriş Yap →</button>
@@ -362,19 +395,16 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
   <input class="bslider" id="bsz" type="range" min="1" max="20" value="3">
   <div class="spacer"></div>
 
-  <!-- İlerleme özeti -->
   <div class="progress-summary" id="progressSummary">
     <div class="progress-summary-bar"><div class="progress-summary-fill" id="progressFill" style="width:0%"></div></div>
     <span id="progressPct">0%</span>
   </div>
 
-  <!-- Çevrimiçi göstergesi -->
   <div class="online-pill" id="onlinePill">
     <div class="online-dot" id="onlineDot"></div>
     <span id="onlineText">Çevrimiçi</span>
   </div>
 
-  <!-- Node arama -->
   <div class="search-wrap" id="searchWrap">
     <button class="search-btn" onclick="toggleSearch()" title="Node Ara (Ctrl+F)">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -416,7 +446,7 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
     <button class="naddBtn" onclick="addNode('milestone')"><div class="nicon" style="background:rgba(255,184,106,.12);">🏁</div><div><div style="font-weight:600;font-size:13px;">Kilometre Taşı</div><div style="font-size:10.5px;color:var(--muted)">Önemli dönüm</div></div></button>
     <button class="naddBtn" onclick="addNode('end')"><div class="nicon" style="background:rgba(255,106,138,.12);">🎯</div><div><div style="font-weight:600;font-size:13px;">Hedef</div><div style="font-size:10.5px;color:var(--muted)">Bitiş noktası</div></div></button>
   </div>
-  <div class="hint" id="hint"><b>V</b> Seç · <b>P</b> Kalem · <b>E</b> Silgi · <b>C</b> Bağla · <b>T</b> Metin · <b>Space+sürükle</b> kaydır · <b>Scroll</b> zoom</div>
+  <div class="hint" id="hint">Seç · Kalem · Silgi · Bağla · Metin · Sürükle · Zoom</div>
 </div>
 
 <div id="logPanel">
@@ -440,17 +470,14 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
   <div class="log-clear"><button onclick="clearLog()">Logu Temizle</button></div>
 </div>
 
-<!-- Toast bildirimleri -->
 <div id="toastContainer"></div>
 
-<!-- Tam ekran çıkış butonu -->
 <button class="fullscreen-exit" onclick="toggleFullscreen()">⛶ Tam Ekrandan Çık</button>
 
-<!-- Klavye kısayolları paneli -->
 <div id="shortcutsPanel" onclick="if(event.target===this)hideShortcuts()">
   <div class="shortcuts-box">
     <div class="shortcuts-title">
-      ⌨️ Klavye Kısayolları
+      Klavye Kısayolları
       <button class="shortcuts-close" onclick="hideShortcuts()">×</button>
     </div>
     <div class="shortcuts-grid">
@@ -474,39 +501,87 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
 
 <div id="expOverlay"><div class="spin"></div><p>Görsel hazırlanıyor…</p></div>
 
-<!-- ── BUG REPORT PANEL ── -->
 <div id="bugPanel">
   <div class="bug-header">
-    <div class="bug-header-title"><div class="bug-header-dot"></div>Bug Reports</div>
-    <button class="bug-close" onclick="closeBug()">×</button>
-  </div>
-  <div class="bug-tabs">
-    <button class="bug-tab on" id="bugTabOpen" onclick="setBugTab('open')">Açık</button>
-    <button class="bug-tab" id="bugTabResolved" onclick="setBugTab('resolved')">Çözüldü</button>
-  </div>
-  <div class="bug-list" id="bugList"></div>
-  <div class="bug-new">
-    <div class="bug-new-label">Yeni Bug Bildir</div>
-    <textarea class="bug-new-ta" id="bugText" placeholder="Bug'ı açıkla… ne oldu, ne bekliyordun?" rows="3"></textarea>
-    <div class="bug-media-row" id="bugMediaRow">
-      <label class="bug-upload-btn" title="Görsel veya video ekle">
-        <input type="file" accept="image/*,video/*" multiple style="display:none" id="bugFileInput" onchange="handleBugFiles(this)">
-        +
-      </label>
+    <div class="bug-header-title">
+      <div class="bug-header-dot"></div>Logary Beta Tester Paneli
+      <span id="testerNameDisp" style="font-size:11.5px; color:var(--muted); margin-left:8px; font-weight:500; font-family:'DM Sans',sans-serif;"></span>
     </div>
-    <div class="bug-send-row">
-      <button class="bug-send-btn" id="bugSendBtn" onclick="submitBug()">🐛 Gönder</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="bug-tester-logout" onclick="doLogout()">Çıkış Yap</button>
+      <button class="bug-close" onclick="closeBug()">×</button>
+    </div>
+  </div>
+  
+  <div class="bug-panel-body">
+    <div class="bug-main">
+      <div class="bug-tabs">
+        <button class="bug-tab on" id="bugTabOpen" onclick="setBugTab('open')">Açık</button>
+        <button class="bug-tab" id="bugTabResolved" onclick="setBugTab('resolved')">Çözüldü</button>
+      </div>
+      <div class="bug-list" id="bugList"></div>
+    </div>
+
+    <div class="bug-sidebar">
+      <div class="system-status-box" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <h4 style="font-family:'Syne',sans-serif; font-size:13px; color:var(--muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px;">Sistem Durumu</h4>
+        
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px;">
+          <span style="color:var(--muted);">Aktif Test Sürümü:</span>
+          <span style="color:var(--text); font-family:'DM Sans',monospace; font-weight:600;">v0.9.9</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px;">
+          <span style="color:var(--muted);">Logary API (Backend):</span>
+          <span style="color:var(--accent3); font-weight:600; display:flex; align-items:center; gap:4px;"><div class="online-dot" style="position:static;"></div> Operasyonel</span>
+        </div>
+      </div>
+
+      <div class="bug-new">
+        <div class="bug-new-label">Hata Raporu Oluştur</div>
+        
+        <select id="bugTypeSel" class="bug-new-type">
+          <option value="ui">UI / Tasarım Kayması</option>
+          <option value="crash">Uygulama Çökmesi / Bug</option>
+          <option value="func">Mantık / İşlev Hatası</option>
+          <option value="auth">Giriş / Hesap Sorunu</option>
+          <option value="idea">Geliştirme Önerisi</option>
+          <option value="other">Diğer</option>
+        </select>
+
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <select id="bugPrioritySel" class="bug-new-type" style="margin-bottom:0; flex:1;">
+            <option value="high">Blocker (Kritik)</option>
+            <option value="med" selected>Major (Yüksek)</option>
+            <option value="low">Minor (Düşük)</option>
+          </select>
+          
+          <select id="bugRepSel" class="bug-new-type" style="margin-bottom:0; flex:1;">
+            <option value="always">Her Zaman</option>
+            <option value="sometimes">Ara Sıra</option>
+            <option value="once">Sadece Bir Kez</option>
+          </select>
+        </div>
+
+        <textarea class="bug-new-ta" id="bugText" placeholder="Hatanın Gerçekleşme Adımları:&#10;1. Şuraya tıkladım...&#10;2. Şu oldu...&#10;&#10;Beklenen Sonuç: Bu olmalıydı." rows="5"></textarea>
+        <div class="bug-media-row" id="bugMediaRow">
+          <label class="bug-upload-btn" title="Ekran Görüntüsü / Video Ekle">
+            <input type="file" accept="image/*,video/*" multiple style="display:none" id="bugFileInput" onchange="handleBugFiles(this)">
+            +
+          </label>
+        </div>
+        <div class="bug-send-row">
+          <button class="bug-send-btn" id="bugSendBtn" onclick="submitBug()">Raporu İlet</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Lightbox -->
 <div id="lightbox" onclick="closeLightbox()">
   <button id="lightbox-close" onclick="closeLightbox()">×</button>
   <div id="lightbox-content"></div>
 </div>
 
-<!-- ── MOBILE BAR ── -->
 <div class="mob-bar" id="mobBar">
   <div class="mob-tools">
     <button class="mob-btn active" id="mtSel" onclick="setTool('select')">
@@ -584,7 +659,7 @@ async function sendDiscord(type,nodeType,title,desc='',progress=null,extra=null)
     const typeLabels={task:'Görev',start:'Başlangıç',milestone:'Kilometre Taşı',end:'Hedef'};
     const icon=DC_ICONS[nodeType]||DC_ICONS[type]||'📌';
     if(nodeType&&typeLabels[nodeType])fields.push({name:'Tip',value:`${icon} ${typeLabels[nodeType]}`,inline:true});
-    const actionLabels={node:'➕ Yeni Node Eklendi',delete:'🗑️ Node Silindi',edit:'✏️ Node Güncellendi',progress:'📊 İlerleme Güncellendi',conn:'🔗 Bağlantı Eklendi'};
+    const actionLabels={node:'Yeni Node Eklendi',delete:'Node Silindi',edit:'Node Güncellendi',progress:'İlerleme Güncellendi',conn:'Bağlantı Eklendi'};
     const res=await fetch(DISCORD_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Roadmap',embeds:[{title:actionLabels[type]||type,description:`**${title||'(başlıksız)'}**`,color,fields,footer:{text:'Logary Roadmap • logaryapp.github.io'},timestamp:now.toISOString()}]})});
     if(!res.ok){const err=await res.text();console.warn('Discord hata:',res.status,err);}
   }catch(e){console.warn('Discord webhook hatası:',e);}
@@ -645,29 +720,72 @@ function setupLogoClick(){
 }
 
 async function sha256(msg){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+
 const PW_OWNER='ademcanadmin6060';
 const PW_PARTNER='logarymjademadmin';
+const PW_T1='darknelfsslogaryabug';
+const PW_T2='asellogarybug';
+const PW_T3='papexlogarybug';
+
 function isLoggedIn(){return sessionStorage.getItem('logary_auth')==='1';}
-function isOwner(){return sessionStorage.getItem('logary_owner')==='1';}
+function isOwner(){return sessionStorage.getItem('logary_role')==='owner';}
 
 async function doLogin(){
   const pw=document.getElementById('pwInput').value.trim();
   const inp=document.getElementById('pwInput');
   const err=document.getElementById('loginErr');
   if(!pw){inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);return;}
-  const [hashInput,hashOwner,hashPartner]=await Promise.all([sha256(pw),sha256(PW_OWNER),sha256(PW_PARTNER)]);
-  if(hashInput===hashOwner||hashInput===hashPartner){
+  
+  const hashes = await Promise.all([
+      sha256(pw), sha256(PW_OWNER), sha256(PW_PARTNER),
+      sha256(PW_T1), sha256(PW_T2), sha256(PW_T3)
+  ]);
+  const [hashInput, hashOwner, hashPartner, hashT1, hashT2, hashT3] = hashes;
+
+  let role = null;
+  let testerName = '';
+
+  if(hashInput===hashOwner){ role = 'owner'; }
+  else if(hashInput===hashPartner){ role = 'partner'; }
+  else if(hashInput===hashT1){ role = 'tester'; testerName = 'Darknelfss'; }
+  else if(hashInput===hashT2){ role = 'tester'; testerName = 'Asel'; }
+  else if(hashInput===hashT3){ role = 'tester'; testerName = 'Papex'; }
+
+  if(role){
     sessionStorage.setItem('logary_auth','1');
-    if(hashInput===hashOwner)sessionStorage.setItem('logary_owner','1');
-    else sessionStorage.removeItem('logary_owner');
+    sessionStorage.setItem('logary_role', role);
+    if(testerName) sessionStorage.setItem('logary_tester_name', testerName);
+
     const ls=document.getElementById('loginScreen');
     ls.style.opacity='0';ls.style.transition='opacity .4s';
     setTimeout(()=>{ls.style.display='none';},400);
-    err.classList.remove('show');initApp();
-    if(hashInput===hashOwner)setTimeout(openLog,600);
-  }else{inp.classList.add('err');err.classList.add('show');inp.value='';setTimeout(()=>inp.classList.remove('err'),400);}
+    err.classList.remove('show');
+    
+    if(role === 'tester') {
+        setupTesterMode();
+    } else {
+        initApp();
+        if(role==='owner') setTimeout(openLog,600);
+    }
+  }else{
+    inp.classList.add('err');err.classList.add('show');inp.value='';
+    setTimeout(()=>inp.classList.remove('err'),400);
+  }
 }
-function doLogout(){sessionStorage.removeItem('logary_auth');location.reload();}
+
+function setupTesterMode() {
+    document.body.classList.add('tester-mode');
+    const tName = sessionStorage.getItem('logary_tester_name');
+    if(tName) document.getElementById('testerNameDisp').textContent = '(' + tName + ')';
+    openBug();
+}
+
+function doLogout(){
+  sessionStorage.removeItem('logary_auth');
+  sessionStorage.removeItem('logary_role');
+  sessionStorage.removeItem('logary_tester_name');
+  location.reload();
+}
 
 const FORCE_PRESET=false;
 const PRESET_NODES=[
@@ -885,7 +1003,7 @@ function setTool(t){
   if(t==='draw'||t==='erase'||t==='text'){canvas.style.pointerEvents='all';canvas.style.cursor=t==='draw'?'crosshair':t==='erase'?'cell':'text';NL.style.pointerEvents='none';}
   else{canvas.style.pointerEvents='none';canvas.style.cursor='default';NL.style.pointerEvents='none';}
   if(t!=='connect'){connFrom=null;clearHL();}
-  const hints={select:'Node başlığına <b>tıkla</b> → yaz · Üst şeridi <b>sürükle</b> → taşı · <b>Space+sürükle</b> → kaydır',draw:'<b>Sürükle</b> çiz · Renk & kalınlık seç',erase:'<b>Sürükle</b> sil',connect:'Bir node\'a <b>tıkla</b> → başlangıç seç → başka node\'a <b>tıkla</b> → bağla',text:'Canvas\'a <b>tıkla</b> → metin ekle · Sürükle → taşı'};
+  const hints={select:'Seç',draw:'Kalem',erase:'Silgi',connect:'Bağla',text:'Metin'};
   document.getElementById('hint').innerHTML=hints[t]||'';
 }
 function pickC(el){document.querySelectorAll('.cdot').forEach(d=>d.classList.remove('on'));el.classList.add('on');drawColor=el.dataset.c;}
@@ -1031,7 +1149,16 @@ function loadPreset(){
 window.addEventListener('load',()=>{
   document.getElementById('pwInput').focus();
   setupLogoClick();
-  if(isLoggedIn()){document.getElementById('loginScreen').style.display='none';initApp();if(isOwner())setTimeout(openLog,600);}
+  if(isLoggedIn()){
+    document.getElementById('loginScreen').style.display='none';
+    const role = sessionStorage.getItem('logary_role');
+    if(role === 'tester') {
+        setupTesterMode();
+    } else {
+        initApp();
+        if(isOwner()) setTimeout(openLog,600);
+    }
+  }
 });
 
 const BUG_WEBHOOK='https://discord.com/api/webhooks/1485422309811556372/vT4K0vEjo4q9fdoGq5fNfmy5kQq1QhK5fMd-AIxXHpDeiPKmK1Xb2ZayipV7YoCH7V1k';
@@ -1052,7 +1179,8 @@ async function loadBugs(){
   const list=document.getElementById('bugList');
   list.innerHTML=`<div class="bug-empty-state"><div class="bug-empty-icon">⏳</div><span>Yükleniyor…</span></div>`;
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/bugreports?status=eq.${bugTab}&order=created_at.desc`,{headers:SUPA_HEADERS});
+    let statusFilter = bugTab === 'open' ? 'in.(open,investigating)' : 'in.(resolved,duplicate,not_a_bug)';
+    const res=await fetch(`${SUPA_URL}/rest/v1/bugreports?status=${statusFilter}&order=created_at.desc`,{headers:SUPA_HEADERS});
     const bugs=await res.json();
     if(!bugs||bugs.length===0){list.innerHTML=`<div class="bug-empty-state"><div class="bug-empty-icon">${bugTab==='open'?'🎉':'📭'}</div><span>${bugTab==='open'?'Hiç açık bug yok!':'Henüz çözülen bug yok'}</span></div>`;return;}
     list.innerHTML=bugs.map(b=>renderBugItem(b)).join('');
@@ -1062,38 +1190,67 @@ async function loadBugs(){
 function renderBugItem(b){
   const d=new Date(b.created_at);
   const timeStr=d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  
+  let author = ""; let bugType = ""; let device = ""; let priority = ""; let rep = ""; let contentText = b.content || '';
+
+  if(contentText.includes('|||')) {
+      const parts = contentText.split('|||');
+      author = parts[0]; bugType = parts[1];
+      if(parts.length >= 6) { 
+          device = parts[2]; priority = parts[3]; rep = parts[4]; contentText = parts.slice(5).join('|||'); 
+      } 
+      else if(parts.length >= 4) { device = parts[2]; contentText = parts.slice(3).join('|||'); } 
+      else { contentText = parts.slice(2).join('|||'); }
+  }
+
   let mediaHtml='';
   if(b.media_url){
     const urls=b.media_url.split(',').filter(Boolean);
     mediaHtml=`<div class="bug-media">${urls.map(u=>{
       const isVideo=u.match(/\.(mp4|webm|mov|avi)/i);
-      return isVideo
-        ?`<video class="bug-media-video" src="${u}" controls onclick="event.stopPropagation()"></video>`
-        :`<img class="bug-media-item" src="${u}" onclick="openLightbox('${u}')" alt="bug media">`;
+      return isVideo ?`<video class="bug-media-video" src="${u}" controls onclick="event.stopPropagation()"></video>` :`<img class="bug-media-item" src="${u}" onclick="openLightbox('${u}')" alt="bug media">`;
     }).join('')}</div>`;
   }
   let replyHtml='';
-  if(b.reply){replyHtml=`<div class="bug-reply-box"><div class="bug-reply-label">Yanıt</div><div class="bug-reply-text">${b.reply}</div></div>`;}
+  if(b.reply){replyHtml=`<div class="bug-reply-box"><div class="bug-reply-label">Yönetici Yanıtı</div><div class="bug-reply-text">${b.reply}</div></div>`;}
+
+  const statusMap = { 'open': 'Açık', 'resolved': 'Çözüldü', 'investigating': 'İnceleniyor', 'duplicate': 'Kopya', 'not_a_bug': 'Hata Değil' };
+  const statusText = statusMap[b.status] || 'Bilinmiyor';
 
   const ownerActions=isOwner()?`
-    <div class="bug-actions">
-      ${b.status==='open'?`
-        <div style="display:flex;flex-direction:column;gap:5px;flex:1;">
-          <input class="bug-reply-input" id="ri${b.id}" placeholder="Yanıt yaz…" onclick="event.stopPropagation()">
-          <div style="display:flex;gap:6px;">
-            <button class="bug-reply-submit" style="flex:1;" onclick="sendReply(${b.id})">Yanıt Gönder</button>
-            <button class="bug-action-btn resolve" style="flex:1;" onclick="resolveBug(${b.id})">✓ Çözüldü</button>
-          </div>
-        </div>`
-      :`<button class="bug-action-btn" style="flex:1;" onclick="reopenBug(${b.id})">Yeniden Aç</button>`}
+    <div class="bug-actions" style="border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+      <div style="display:flex;flex-direction:column;gap:10px;flex:1;">
+        ${b.status==='open' || b.status==='investigating' ? `
+        <div style="display:flex; gap:6px;">
+          <input class="bug-reply-input" style="margin:0;" id="ri${b.id}" placeholder="Resmi bir yanıt bırakın..." onclick="event.stopPropagation()">
+          <button class="bug-reply-submit" style="width:auto; padding: 0 16px;" onclick="sendReply(${b.id})">Yanıtla</button>
+        </div>` : ''}
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="font-size:11px; color:var(--muted); font-weight:600;">QA İŞLEMİ:</span>
+          <select class="admin-status-sel" onchange="changeBugStatus(${b.id}, this.value)" onclick="event.stopPropagation()">
+            <option value="open" ${b.status==='open'?'selected':''}>Açık (Bekliyor)</option>
+            <option value="investigating" ${b.status==='investigating'?'selected':''}>İnceleniyor</option>
+            <option value="resolved" ${b.status==='resolved'?'selected':''}>Çözüldü (Kapat)</option>
+            <option value="duplicate" ${b.status==='duplicate'?'selected':''}>Kopya</option>
+            <option value="not_a_bug" ${b.status==='not_a_bug'?'selected':''}>Hata Değil</option>
+          </select>
+        </div>
+      </div>
     </div>`:'';
 
-  return `<div class="bug-item${b.status==='resolved'?' resolved':''}">
+  return `<div class="bug-item${b.status==='resolved'||b.status==='not_a_bug'||b.status==='duplicate'?' resolved':''}">
     <div class="bug-item-head">
-      <span class="bug-status ${b.status}">${b.status==='open'?'Açık':'Çözüldü'}</span>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span class="bug-status ${b.status}">${statusText}</span>
+          ${author ? `<span class="bug-author-badge">👤 ${author}</span>` : ''}
+          ${priority ? `<span class="bug-type-badge">${priority}</span>` : ''}
+          ${rep ? `<span class="bug-type-badge">${rep}</span>` : ''}
+          ${bugType ? `<span class="bug-type-badge">${bugType}</span>` : ''}
+          ${device ? `<span class="bug-device-badge">📱 ${device}</span>` : ''}
+      </div>
       <span class="bug-time">${timeStr}</span>
     </div>
-    <div class="bug-content">${b.content||''}</div>
+    <div class="bug-content">${contentText}</div>
     ${mediaHtml}
     ${replyHtml}
     ${ownerActions}
@@ -1141,42 +1298,89 @@ async function uploadBugFiles(){
   return urls;
 }
 
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+  let os = "Bilinmiyor";
+  if (/android/i.test(ua)) os = "Android";
+  else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) os = "iOS";
+  else if (/Windows NT/.test(ua)) os = "Windows";
+  else if (/Mac OS X/.test(ua)) os = "macOS";
+  
+  let browser = "Tarayıcı";
+  if (/chrome|crios|crmo/i.test(ua) && !/edg/i.test(ua)) browser = "Chrome";
+  else if (/safari/i.test(ua) && !/chrome|crios|crmo/i.test(ua)) browser = "Safari";
+  else if (/firefox|fxios/i.test(ua)) browser = "Firefox";
+  else if (/edg/i.test(ua)) browser = "Edge";
+  
+  return `${os} - ${browser}`;
+}
+
 async function submitBug(){
   const text=document.getElementById('bugText').value.trim();
   const validFiles=bugPendingFiles.filter(Boolean);
-  if(!text&&validFiles.length===0){alert('Açıklama yaz veya dosya ekle!');return;}
-  const btn=document.getElementById('bugSendBtn');btn.disabled=true;btn.textContent='Gönderiliyor…';
+  
+  const typeSel = document.getElementById('bugTypeSel');
+  const bugTypeLabel = typeSel.options[typeSel.selectedIndex].text;
+  const priSel = document.getElementById('bugPrioritySel');
+  const priorityLabel = priSel.options[priSel.selectedIndex].text;
+  const repSel = document.getElementById('bugRepSel');
+  const repLabel = repSel.options[repSel.selectedIndex].text;
+
+  if(!text&&validFiles.length===0){alert('Lütfen hata detaylarını yazın veya dosya ekleyin.');return;}
+  const btn=document.getElementById('bugSendBtn');btn.disabled=true;btn.textContent='İletiliyor…';
+  
+  const tName = sessionStorage.getItem('logary_tester_name') || (isOwner() ? 'Kurucu' : 'Admin');
+  const deviceInfo = getDeviceInfo(); 
+  const finalContent = `${tName}|||${bugTypeLabel}|||${deviceInfo}|||${priorityLabel}|||${repLabel}|||${text}`;
+
   try{
     const urls=await uploadBugFiles();
     await fetch(`${SUPA_URL}/rest/v1/bugreports`,{
       method:'POST',
       headers:{...SUPA_HEADERS,'Prefer':'return=representation'},
-      body:JSON.stringify({content:text,media_url:urls.join(','),status:'open'})
+      body:JSON.stringify({content:finalContent, media_url:urls.join(','), status:'open'})
     });
-    await sendBugToDiscord(text,urls,validFiles);
+    
+    await sendBugToDiscord(text, bugTypeLabel, deviceInfo, priorityLabel, repLabel, urls, validFiles);
+    
     document.getElementById('bugText').value='';
     bugPendingFiles=[];
     document.querySelectorAll('.bug-preview').forEach(p=>p.remove());
     setBugTab('open');
-  }catch(e){alert('Gönderilemedi: '+e.message);}
-  btn.disabled=false;btn.textContent='🐛 Gönder';
+    showToast('QA Raporu başarıyla sisteme işlendi.', 'success');
+  }catch(e){alert('Sistem Hatası: '+e.message);}
+  btn.disabled=false;btn.textContent='Raporu İlet';
 }
 
-async function sendBugToDiscord(content,mediaUrls=[],rawFiles=[]){
+async function sendBugToDiscord(text, bugTypeLabel, deviceInfo, priority, reproducibility, mediaUrls=[], rawFiles=[]){
   try{
     const now=new Date();
     const timeStr=now.toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     const validFiles=rawFiles.filter(Boolean);
-    const msgText=`🐛 **Bug Raporu**\n━━━━━━━━━━━━━━━━━━━━\n${content||'(açıklama yok)'}\n━━━━━━━━━━━━━━━━━━━━\n🔴 **Durum:** Açık　　🕐 **Zaman:** ${timeStr}`;
+    
+    const tName = sessionStorage.getItem('logary_tester_name') || (isOwner() ? 'Kurucu' : 'Admin');
+    
+    const fields=[
+        {name:'Tester',value:tName,inline:true},
+        {name:'Kategori',value:bugTypeLabel,inline:true},
+        {name:'Ortam',value:deviceInfo,inline:true},
+        {name:'Öncelik',value:priority,inline:true},
+        {name:'Sıklık',value:reproducibility,inline:true},
+        {name:'Zaman',value:timeStr,inline:true}
+    ];
+    if(text)fields.push({name:'Açıklama',value:text,inline:false});
+
+    const embeds=[{title:'QA Hata Raporu',description:'Yeni Rapor',color:0xff4444,fields,footer:{text:'Logary QA Bot • logaryapp.github.io'},timestamp:now.toISOString()}];
+    
     if(validFiles.length>0){
       const form=new FormData();
-      form.append('payload_json',JSON.stringify({username:'Logary Bug Bot',content:msgText}));
+      form.append('payload_json',JSON.stringify({username:'Logary QA Bot',embeds}));
       validFiles.forEach((f,i)=>form.append(`files[${i}]`,f,f.name));
       await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',body:form});
     } else {
-      await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',content:msgText})});
+      await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary QA Bot',embeds})});
     }
-  }catch(e){console.warn('Bug Discord hatası:',e);}
+  }catch(e){console.warn('QA Bot hatası:',e);}
 }
 
 async function sendReply(id){
@@ -1188,27 +1392,59 @@ async function sendReply(id){
     const bug=rows?.[0];
     await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({reply})});
     const timeStr=new Date().toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    const msgText=`💬 **Bug Yanıtlandı**\n━━━━━━━━━━━━━━━━━━━━\n📋 **Bug:** ${(bug?.content||'(yok)').slice(0,200)}\n💬 **Yanıt:** ${reply}\n━━━━━━━━━━━━━━━━━━━━\n🕐 **Zaman:** ${timeStr}`;
-    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',content:msgText})});
+    
+    let contentSnippet = bug?.content || '(yok)';
+    if(contentSnippet.includes('|||')) {
+       const parts = contentSnippet.split('|||');
+       contentSnippet = parts.length >= 6 ? parts.slice(5).join('|||') : parts.slice(2).join('|||');
+    }
+
+    const fields=[
+        {name:'Bug',value:contentSnippet.slice(0,200),inline:false},
+        {name:'Yanıt',value:reply,inline:false},
+        {name:'Zaman',value:timeStr,inline:true}
+    ];
+
+    const embeds=[{title:'Bug Yanıtlandı',description:'Yönetici Yanıtı',color:0x6affcc,fields,footer:{text:'Logary QA Bot • logaryapp.github.io'},timestamp:new Date().toISOString()}];
+
+    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary QA Bot',embeds})});
     loadBugs();
   }catch(e){alert('Yanıt gönderilemedi');}
 }
 
-async function resolveBug(id){
+async function changeBugStatus(id, status){
   try{
     const res=await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{headers:SUPA_HEADERS});
     const rows=await res.json();
     const bug=rows?.[0];
-    await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({status:'resolved'})});
+    
+    await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({status})});
+    
+    const statusMap = {'open': 'Yeniden Açıldı', 'resolved': 'Çözüldü', 'investigating': 'İnceleniyor', 'duplicate': 'Kopya', 'not_a_bug': 'Hata Değil'};
+    const dcStatusMap = {'open': 'Yeniden Açıldı', 'resolved': 'Çözüldü', 'investigating': 'İnceleniyor', 'duplicate': 'Kopya', 'not_a_bug': 'Hata Değil'};
+    const dcStatusColors = {'open': 0xff4444, 'resolved': 0x6affcc, 'investigating': 0xffb86a, 'duplicate': 0xc46aff, 'not_a_bug': 0x7a7a96};
+    
     const timeStr=new Date().toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    const msgText=`✅ **Bug Çözüldü**\n━━━━━━━━━━━━━━━━━━━━\n${(bug?.content||'(yok)').slice(0,200)}\n━━━━━━━━━━━━━━━━━━━━\n✅ **Durum:** Çözüldü　　🕐 **Zaman:** ${timeStr}`;
-    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary Bug Bot',content:msgText})});
-    loadBugs();
-  }catch(e){}
-}
+    
+    let contentSnippet = bug?.content || '(yok)';
+    if(contentSnippet.includes('|||')) {
+       const parts = contentSnippet.split('|||');
+       contentSnippet = parts.length >= 6 ? parts.slice(5).join('|||') : parts.slice(2).join('|||');
+    }
 
-async function reopenBug(id){
-  try{await fetch(`${SUPA_URL}/rest/v1/bugreports?id=eq.${id}`,{method:'PATCH',headers:SUPA_HEADERS,body:JSON.stringify({status:'open',reply:null})});loadBugs();}catch(e){}
+    const fields=[
+        {name:'Bug',value:contentSnippet.slice(0,150)+'...',inline:false},
+        {name:'Yeni Durum',value:dcStatusMap[status],inline:true},
+        {name:'Zaman',value:timeStr,inline:true}
+    ];
+
+    const embeds=[{title:'Bug Durumu Güncellendi',description:'QA İşlemi',color:dcStatusColors[status],fields,footer:{text:'Logary QA Bot • logaryapp.github.io'},timestamp:new Date().toISOString()}];
+
+    await fetch(BUG_WEBHOOK+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Logary QA Bot',embeds})});
+    
+    loadBugs();
+    showToast('Durum güncellendi', 'success');
+  }catch(e){ showToast('Durum güncellenemedi', 'warn'); }
 }
 
 function openLightbox(url){
@@ -1219,17 +1455,15 @@ function openLightbox(url){
 }
 function closeLightbox(){document.getElementById('lightbox').classList.remove('show');}
 
-/* ── TOAST ── */
 function showToast(msg,type='info',icon='ℹ️',duration=3500){
   const container=document.getElementById('toastContainer');if(!container)return;
   const t=document.createElement('div');
   t.className=`toast ${type}`;
-  t.innerHTML=`<span class="toast-icon">${icon}</span><span class="toast-msg">${msg}</span>`;
+  t.innerHTML=`<span class="toast-msg">${msg}</span>`;
   container.appendChild(t);
   setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300);},duration);
 }
 
-/* ── İLERLEME ÖZETİ ── */
 function updateProgressSummary(){
   if(!nodes.length)return;
   const avg=Math.round(nodes.reduce((s,n)=>s+n.progress,0)/nodes.length);
@@ -1239,7 +1473,6 @@ function updateProgressSummary(){
   if(pct)pct.textContent=avg+'%';
 }
 
-/* ── BUG SAYACI ── */
 async function updateBugCount(){
   try{
     const res=await fetch(`${SUPA_URL}/rest/v1/bugreports?status=eq.open&select=id`,{headers:SUPA_HEADERS});
@@ -1250,7 +1483,6 @@ async function updateBugCount(){
   }catch(e){}
 }
 
-/* ── DEADLINE ── */
 function setDeadline(id,val){
   const n=nodes.find(x=>x.id===id);if(!n)return;
   n.deadline=val;updateDeadlineStyle(id);scheduleSave();
@@ -1276,7 +1508,6 @@ function checkDeadlines(){
   });
 }
 
-/* ── NODE ARAMA ── */
 function toggleSearch(){
   const inp=document.getElementById('searchInput');
   const wr=document.getElementById('searchWrap');
@@ -1304,11 +1535,8 @@ function searchNodes(q){
   }
 }
 
-/* ── KLAVYE KISAYOLLARI ── */
 function showShortcuts(){document.getElementById('shortcutsPanel').classList.add('show');}
 function hideShortcuts(){document.getElementById('shortcutsPanel').classList.remove('show');}
-
-/* ── TAM EKRAN ── */
 function toggleFullscreen(){
   document.body.classList.toggle('fullscreen');
   const isFs=document.body.classList.contains('fullscreen');
