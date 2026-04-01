@@ -328,19 +328,14 @@ body.fullscreen .fullscreen-exit{display:flex;align-items:center;gap:5px;}
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════════════
-//  SABITLER & WEBHOOK'LAR
-// ════════════════════════════════════════════════════════════════════
-const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1485407990080082115/C-I_U4t3VdyLc2p_j6UN6G178kKwVjuUXZJeJgS_VxFBATdRZWQvwdO_MuhiKdnJqess';
-const SUPA_URL     = 'https://zbphnjrtmmnjoaotrsju.supabase.co';
-const SUPA_KEY     = 'sb_publishable_gp-eupG38TKtE5XsHcSjVg_NzZL9EEG';
+
+const DISCORD_WEBHOOK = '';
+const SUPA_URL     = '';
+const SUPA_KEY     = '';
 const SUPA_HEADERS = {'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
 const ROW_ID       = 1;
 const SKEY         = 'logary_v3';
 
-// ════════════════════════════════════════════════════════════════════
-//  DISCORD EMBED SİSTEMİ
-// ════════════════════════════════════════════════════════════════════
 const DC_COLORS = {
   task:      0x7C6AFF,
   start:     0x6AFFCC,
@@ -410,9 +405,6 @@ async function sendDiscord(type, nodeType, title, desc = '', progress = null, ex
   } catch (e) { console.warn('Discord webhook hatası:', e); }
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  KİMLİK DOĞRULAMA
-// ════════════════════════════════════════════════════════════════════
 const ADMIN_CREDENTIALS = {
   'ademcanadmin6060': 'owner',
   'logarymjademadmin': 'partner',
@@ -450,9 +442,6 @@ function doLogout() {
   location.reload();
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  PRESET VERISI
-// ════════════════════════════════════════════════════════════════════
 const FORCE_PRESET = false;
 const PRESET_NODES = [
   {id:1,type:'start',x:80,y:200,title:'Logary v1.0 Canlıya Çıkış',desc:"29 Mart lansmanı. Uygulamanın marketlerde yayınlanması ve 12 kişilik Beta Tester'in içeri alınması",progress:38},
@@ -475,9 +464,6 @@ const PRESET_LABELS = [
   {id:3,x:80,y:730,text:'v1.2 - v1.3: Topluluk & İçerik'},
 ];
 
-// ════════════════════════════════════════════════════════════════════
-//  UYGULAMA DEĞİŞKENLERİ
-// ════════════════════════════════════════════════════════════════════
 let tool='select', drawColor='#7c6aff', brushSz=3;
 let drawing=false, lx=0, ly=0;
 let nodes=[], conns=[], nid=0;
@@ -598,9 +584,6 @@ async function initApp() {
   setInterval(updateProgressSummary, 5000);
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  VIEWPORT & ZOOM
-// ════════════════════════════════════════════════════════════════════
 function applyVP() {
   VP.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
   const gs = 40 * scale;
@@ -623,9 +606,6 @@ function resizeCanvas() {
 }
 function resize() { resizeCanvas(); applyVP(); }
 
-// ════════════════════════════════════════════════════════════════════
-//  KAYIT SİSTEMİ
-// ════════════════════════════════════════════════════════════════════
 function setSB(state, txt) { const b=document.getElementById('sbadge'); b.className='sbadge '+state; document.getElementById('stxt').textContent=txt; }
 function scheduleSave() { setSB('saving','Kaydediliyor…'); clearTimeout(saveTimer); saveTimer=setTimeout(doSave,1200); }
 
@@ -680,9 +660,6 @@ function startRealtimeSync() {
   }, 3000);
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  ARAÇ SİSTEMİ
-// ════════════════════════════════════════════════════════════════════
 function setTool(t) {
   tool = t;
   ['Sel','Draw','Erase','Conn','Text'].forEach(n => document.getElementById('t'+n)?.classList.remove('active'));
@@ -698,9 +675,6 @@ function setTool(t) {
 }
 function pickC(el) { document.querySelectorAll('.cdot').forEach(d => d.classList.remove('on')); el.classList.add('on'); drawColor=el.dataset.c; }
 
-// ════════════════════════════════════════════════════════════════════
-//  ETİKET SİSTEMİ
-// ════════════════════════════════════════════════════════════════════
 function addLabel(x, y) { const id=++lid; const label={id,x,y,text:''}; labels.push(label); buildLabel(label,true); scheduleSave(); }
 function buildLabel(label, focusNow=false) {
   const el = document.createElement('div'); el.className='ftxt'; el.id='l'+label.id; el.style.cssText=`left:${label.x}px;top:${label.y}px;`;
@@ -717,9 +691,6 @@ function buildLabel(label, focusNow=false) {
 }
 function delLabel(id) { labels=labels.filter(l=>l.id!==id); document.getElementById('l'+id)?.remove(); scheduleSave(); }
 
-// ════════════════════════════════════════════════════════════════════
-//  NODE SİSTEMİ
-// ════════════════════════════════════════════════════════════════════
 const TLABEL = { task:'GÖREV', start:'BAŞLANGIÇ', milestone:'KM TAŞI', end:'HEDEF' };
 
 function addNode(type, x, y) {
@@ -826,9 +797,6 @@ function redrawConns() {
   });
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  YARDIMCI FONKSİYONLAR
-// ════════════════════════════════════════════════════════════════════
 function clearDraw() { ctx.clearRect(0,0,canvas.width,canvas.height); scheduleSave(); }
 function toggleNodeSheet() { document.getElementById('mobSheet').classList.toggle('open'); document.getElementById('mobOverlay').classList.toggle('show'); }
 function closeNodeSheet() { document.getElementById('mobSheet').classList.remove('open'); document.getElementById('mobOverlay').classList.remove('show'); }
@@ -857,9 +825,6 @@ function openLightbox(url) {
 }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('show'); }
 
-// ════════════════════════════════════════════════════════════════════
-//  UI YARDIMCILARI
-// ════════════════════════════════════════════════════════════════════
 function showToast(msg, type='info', icon='ℹ️', duration=3500) {
   const container=document.getElementById('toastContainer'); if(!container)return;
   const t=document.createElement('div'); t.className=`toast ${type}`;
@@ -927,9 +892,6 @@ function toggleFullscreen() {
   showToast(document.body.classList.contains('fullscreen')?'Tam ekran modu aktif':'Normal görünüm','info');
 }
 
-// ════════════════════════════════════════════════════════════════════
-//  SAYFA YÜKLEME
-// ════════════════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
   document.getElementById('pwInput').focus();
   if (isLoggedIn()) {
